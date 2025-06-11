@@ -1,13 +1,11 @@
 {
   "name": "liquid-glass-react",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Apple's Liquid Glass effect for React",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "workspaces": ["liquid-glass"],
   "scripts": {
     "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:types",
@@ -31,12 +29,7 @@
     "react-dom": "^18.2.0",
     "typescript": "^5.0.0"
   },
-  "keywords": [
-    "react",
-    "component",
-    "library",
-    "typescript"
-  ],
+  "keywords": ["react", "component", "library", "typescript"],
   "author": "",
   "license": "MIT",
   "repository": {

@@ -1,21 +1,46 @@
-import { useId, useState, useRef, useCallback, useEffect, forwardRef, CSSProperties } from "react"
-import { displacementMap, prominentDisplacementMap, polarDisplacementMap } from "./utils"
+import { type CSSProperties, forwardRef, useCallback, useEffect, useId, useRef, useState } from "react"
+import { ShaderDisplacementGenerator, fragmentShaders } from "./shader-utils"
+import { displacementMap, polarDisplacementMap, prominentDisplacementMap } from "./utils"
 
-const getMap = (mode: "standard" | "polar" | "prominent") => {
+// Generate shader-based displacement map using shaderUtils
+const generateShaderDisplacementMap = (width: number, height: number): string => {
+  const generator = new ShaderDisplacementGenerator({
+    width,
+    height,
+    fragment: fragmentShaders.liquidGlass,
+  })
+
+  const dataUrl = generator.updateShader()
+  generator.destroy()
+
+  return dataUrl
+}
+
+const getMap = (mode: "standard" | "polar" | "prominent" | "shader", shaderMapUrl?: string) => {
   switch (mode) {
     case "standard":
-      return displacementMap;
+      return displacementMap
     case "polar":
-      return polarDisplacementMap;
+      return polarDisplacementMap
     case "prominent":
-      return prominentDisplacementMap;
+      return prominentDisplacementMap
+    case "shader":
+      return shaderMapUrl || displacementMap
     default:
-      throw new Error(`Invalid mode: ${mode}`);
+      throw new Error(`Invalid mode: ${mode}`)
   }
-};
+}
 
 /* ---------- SVG filter (edge-only displacement) ---------- */
-const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationIntensity: number; width: number; height: number; mode: "standard" | "polar" | "prominent" }> = ({ id, displacementScale, aberrationIntensity, width, height, mode }) => (
+const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationIntensity: number; width: number; height: number; mode: "standard" | "polar" | "prominent" | "shader"; shaderMapUrl?: string }> = ({
+  id,
+  displacementScale,
+  aberrationIntensity,
+  width,
+  height,
+  mode,
+  shaderMapUrl,
+}) => (
   <svg style={{ position: "absolute", width, height }} aria-hidden="true">
     <defs>
       <radialGradient id={`${id}-edge-mask`} cx="50%" cy="50%" r="50%">
@@ -24,9 +49,7 @@ const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationI
         <stop offset="100%" stopColor="white" stopOpacity="1" />
       </radialGradient>
       <filter id={id} x="-35%" y="-35%" width="170%" height="170%" colorInterpolationFilters="sRGB">
-        <feImage id="feimage" x="0" y="0" width="100%" height="100%" result="DISPLACEMENT_MAP" href={
-          getMap(mode)
-        } preserveAspectRatio="xMidYMid slice" />
+        <feImage id="feimage" x="0" y="0" width="100%" height="100%" result="DISPLACEMENT_MAP" href={getMap(mode, shaderMapUrl)} preserveAspectRatio="xMidYMid slice" />
 
         {/* Create edge mask using the displacement map itself */}
         <feColorMatrix
@@ -125,7 +148,7 @@ const GlassContainer = forwardRef<
     padding?: string
     glassSize?: { width: number; height: number }
     onClick?: () => void
-    mode?: "standard" | "polar" | "prominent"
+    mode?: "standard" | "polar" | "prominent" | "shader"
   }>
 >(
   (
@@ -147,13 +170,22 @@ const GlassContainer = forwardRef<
       padding = "24px 32px",
       glassSize = { width: 270, height: 69 },
       onClick,
-      mode = "standard"
+      mode = "standard",
     },
     ref,
   ) => {
     const filterId = useId()
+    const [shaderMapUrl, setShaderMapUrl] = useState<string>("")
 
     const isFirefox = navigator.userAgent.toLowerCase().includes("firefox")
+
+    // Generate shader displacement map when in shader mode
+    useEffect(() => {
+      if (mode === "shader") {
+        const url = generateShaderDisplacementMap(glassSize.width, glassSize.height)
+        setShaderMapUrl(url)
+      }
+    }, [mode, glassSize.width, glassSize.height])
 
     const backdropStyle = {
       filter: isFirefox ? null : `url(#${filterId})`,
@@ -162,7 +194,7 @@ const GlassContainer = forwardRef<
 
     return (
       <div ref={ref} className={`relative ${className} ${active ? "active" : ""} ${Boolean(onClick) ? "cursor-pointer" : ""}`} style={style} onClick={onClick}>
-        <GlassFilter mode={mode} id={filterId} displacementScale={displacementScale} aberrationIntensity={aberrationIntensity} width={glassSize.width} height={glassSize.height} />
+        <GlassFilter mode={mode} id={filterId} displacementScale={displacementScale} aberrationIntensity={aberrationIntensity} width={glassSize.width} height={glassSize.height} shaderMapUrl={shaderMapUrl} />
 
         <div
           className="glass"
@@ -185,11 +217,13 @@ const GlassContainer = forwardRef<
           {/* backdrop layer that gets wiggly */}
           <span
             className="glass__warp"
-            style={{
-              ...backdropStyle,
-              position: "absolute",
-              inset: "0",
-            } as CSSProperties}
+            style={
+              {
+                ...backdropStyle,
+                position: "absolute",
+                inset: "0",
+              } as CSSProperties
+            }
           />
 
           {/* user content stays sharp */}
@@ -227,7 +261,7 @@ interface LiquidGlassProps {
   padding?: string
   style?: React.CSSProperties
   overLight?: boolean
-  mode?: "standard" | "polar" | "prominent"
+  mode?: "standard" | "polar" | "prominent" | "shader"
   onClick?: () => void
 }
 
@@ -261,24 +295,29 @@ export default function LiquidGlass({
   const mouseOffset = externalMouseOffset || internalMouseOffset
 
   // Internal mouse tracking
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const container = mouseContainer?.current || glassRef.current
-    if (!container) return
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      const container = mouseContainer?.current || glassRef.current
+      if (!container) {
+        return
+      }
 
-    const rect = container.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
+      const rect = container.getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const centerY = rect.top + rect.height / 2
 
-    setInternalMouseOffset({
-      x: ((e.clientX - centerX) / rect.width) * 100,
-      y: ((e.clientY - centerY) / rect.height) * 100,
-    })
+      setInternalMouseOffset({
+        x: ((e.clientX - centerX) / rect.width) * 100,
+        y: ((e.clientY - centerY) / rect.height) * 100,
+      })
 
-    setInternalGlobalMousePos({
-      x: e.clientX,
-      y: e.clientY,
-    })
-  }, [mouseContainer])
+      setInternalGlobalMousePos({
+        x: e.clientX,
+        y: e.clientY,
+      })
+    },
+    [mouseContainer],
+  )
 
   // Set up mouse tracking if no external mouse position is provided
   useEffect(() => {
@@ -288,12 +327,14 @@ export default function LiquidGlass({
     }
 
     const container = mouseContainer?.current || glassRef.current
-    if (!container) return
+    if (!container) {
+      return
+    }
 
-    container.addEventListener('mousemove', handleMouseMove)
+    container.addEventListener("mousemove", handleMouseMove)
 
     return () => {
-      container.removeEventListener('mousemove', handleMouseMove)
+      container.removeEventListener("mousemove", handleMouseMove)
     }
   }, [handleMouseMove, mouseContainer, externalGlobalMousePos, externalMouseOffset])
 
@@ -400,7 +441,7 @@ export default function LiquidGlass({
     return () => window.removeEventListener("resize", updateGlassSize)
   }, [])
 
-  const transformStyle = `translate(calc(-50% + ${calculateElasticTranslation().x}px), calc(-50% + ${calculateElasticTranslation().y}px)) ${(isActive && Boolean(onClick)) ? "scale(0.96)" : calculateDirectionalScale()}`
+  const transformStyle = `translate(calc(-50% + ${calculateElasticTranslation().x}px), calc(-50% + ${calculateElasticTranslation().y}px)) ${isActive && Boolean(onClick) ? "scale(0.96)" : calculateDirectionalScale()}`
 
   const baseStyle = {
     ...style,

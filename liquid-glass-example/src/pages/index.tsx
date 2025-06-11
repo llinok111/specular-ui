@@ -1,6 +1,6 @@
 import { Geist } from "next/font/google"
 import { useState, useRef, useCallback } from "react"
-import LiquidGlass from "liquid-glass-react"
+import LiquidGlass from "../components"
 import { LogOutIcon, Github } from "lucide-react"
 
 const geistSans = Geist({
@@ -17,7 +17,7 @@ export default function Home() {
   const [elasticity, setElasticity] = useState(0)
   const [cornerRadius, setCornerRadius] = useState(32)
   const [userInfoOverLight, setUserInfoOverLight] = useState(false)
-  const [userInfoMode, setUserInfoMode] = useState<'standard' | 'polar' | 'prominent'>('standard')
+  const [userInfoMode, setUserInfoMode] = useState<"standard" | "polar" | "prominent" | "shader">("standard")
 
   // Log Out Button Controls
   const [logoutDisplacementScale, setLogoutDisplacementScale] = useState(64)
@@ -27,10 +27,10 @@ export default function Home() {
   const [logoutElasticity, setLogoutElasticity] = useState(0.35)
   const [logoutCornerRadius, setLogoutCornerRadius] = useState(100)
   const [logoutOverLight, setLogoutOverLight] = useState(false)
-  const [logoutMode, setLogoutMode] = useState<'standard' | 'polar' | 'prominent'>('standard')
+  const [logoutMode, setLogoutMode] = useState<"standard" | "polar" | "prominent" | "shader">("standard")
 
   // Shared state
-  const [activeTab, setActiveTab] = useState<'userInfo' | 'logOut'>('userInfo')
+  const [activeTab, setActiveTab] = useState<"userInfo" | "logOut">("userInfo")
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [scroll, setScroll] = useState(0)
@@ -44,24 +44,35 @@ export default function Home() {
   const scrollingOverBrightSection = scroll > 230 && scroll < 500
 
   return (
-    <div className={`${geistSans.className} grid grid-cols-1 grid-rows-2 md:grid-rows-1 md:grid-cols-3 shadow-2xl w-full max-w-5xl mx-auto md:my-10 h-screen md:max-h-[calc(100vh-5rem)] md:rounded-3xl overflow-hidden font-[family-name:var(--font-geist-sans)]`}>
+    <div
+      className={`${geistSans.className} grid grid-cols-1 grid-rows-2 md:grid-rows-1 md:grid-cols-3 shadow-2xl w-full max-w-5xl mx-auto md:my-10 h-screen md:max-h-[calc(100vh-5rem)] md:rounded-3xl overflow-hidden font-[family-name:var(--font-geist-sans)]`}
+    >
       {/* Left Panel - Glass Effect Demo */}
       <div className="flex-1 relative overflow-auto min-h-screen md:col-span-2" ref={containerRef} onScroll={handleScroll}>
         <div className="w-full min-h-[200vh] absolute top-0 left-0 pb-96 mb-96">
           <img src="https://picsum.photos/2000/2000" className="w-full h-96 object-cover" />
           <div className="flex flex-col gap-2" id="bright-section">
             <h2 className="text-2xl font-semibold my-5 text-center">Some Heading</h2>
-            <p className="px-10">Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger <br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger</p>
-
+            <p className="px-10">
+              Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger <br />
+              Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger
+              <br />
+              Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger
+              <br />
+              Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger
+              <br />
+              Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger
+              <br />
+              Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger
+            </p>
           </div>
           <img src="https://picsum.photos/1200/1200" className="w-full h-80 object-cover my-10" />
           <img src="https://picsum.photos/1400/1300" className="w-full h-72 object-cover my-10" />
           <img src="https://picsum.photos/1100/1200" className="w-full h-96 object-cover my-10 mb-96" />
         </div>
 
-        {activeTab === 'userInfo' && (
-          <>
-            <LiquidGlass
+        {activeTab === "userInfo" && (
+          <LiquidGlass
               displacementScale={displacementScale}
               blurAmount={blurAmount}
               saturation={saturation}
@@ -104,10 +115,9 @@ export default function Home() {
                 </div>
               </div>
             </LiquidGlass>
-          </>
         )}
 
-        {activeTab === 'logOut' && (
+        {activeTab === "logOut" && (
           <LiquidGlass
             displacementScale={logoutDisplacementScale}
             blurAmount={logoutBlurAmount}
@@ -120,20 +130,18 @@ export default function Home() {
             mode={logoutMode}
             padding="8px 16px"
             onClick={() => {
-              console.log("Logged out");
+              console.log("Logged out")
             }}
-
             style={{
               position: "fixed",
               top: "20%",
               left: "40%",
             }}
           >
-              <h3 className="text-lg font-medium flex items-center gap-2">
-                Log Out
-                <LogOutIcon className="w-5 h-5" />
-              </h3>
-
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              Log Out
+              <LogOutIcon className="w-5 h-5" />
+            </h3>
           </LiquidGlass>
         )}
       </div>
@@ -143,49 +151,33 @@ export default function Home() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-white">Glassy Boi but Web</h2>
-            <a
-              href="https://github.com/rdev/liquid-glass-react"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
-              title="View on GitHub"
-            >
+            <a href="https://github.com/rdev/liquid-glass-react" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg" title="View on GitHub">
               <Github className="w-6 h-6" />
             </a>
           </div>
           <p className="text-white/60 text-sm">Liquid Glass container effect for React. With settings and effects and stuff.</p>
 
-          <p className="font-semibold text-yellow-300 text-xs mt-2 leading-snug">
-            ⚠️ This doesn't fully work in Safari and Firefox. You will not see edge refraction on non-chromium browsers.
-          </p>
+          <p className="font-semibold text-yellow-300 text-xs mt-2 leading-snug">⚠️ This doesn't fully work in Safari and Firefox. You will not see edge refraction on non-chromium browsers.</p>
         </div>
 
         {/* Tab Switcher */}
         <div className="flex mb-6 bg-white/5 rounded-lg p-1">
           <button
-            onClick={() => setActiveTab('userInfo')}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${
-              activeTab === 'userInfo'
-                ? 'bg-blue-500 text-white shadow-lg'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
-            }`}
+            onClick={() => setActiveTab("userInfo")}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === "userInfo" ? "bg-blue-500 text-white shadow-lg" : "text-white/70 hover:text-white hover:bg-white/10"}`}
           >
             User Info Card
           </button>
           <button
-            onClick={() => setActiveTab('logOut')}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${
-              activeTab === 'logOut'
-                ? 'bg-blue-500 text-white shadow-lg'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
-            }`}
+            onClick={() => setActiveTab("logOut")}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === "logOut" ? "bg-blue-500 text-white shadow-lg" : "text-white/70 hover:text-white hover:bg-white/10"}`}
           >
             Log Out Button
           </button>
         </div>
 
         <div className="space-y-8 flex-1">
-          {activeTab === 'userInfo' && (
+          {activeTab === "userInfo" && (
             <>
               <div>
                 <span className="block text-sm font-semibold text-white/90 mb-3">Refraction Mode</span>
@@ -196,8 +188,8 @@ export default function Home() {
                       id="userInfoModeStandard"
                       name="userInfoMode"
                       value="standard"
-                      checked={userInfoMode === 'standard'}
-                      onChange={(e) => setUserInfoMode(e.target.value as 'standard' | 'polar')}
+                      checked={userInfoMode === "standard"}
+                      onChange={(e) => setUserInfoMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="userInfoModeStandard" className="text-sm text-white/90">
@@ -210,8 +202,8 @@ export default function Home() {
                       id="userInfoModePolar"
                       name="userInfoMode"
                       value="polar"
-                      checked={userInfoMode === 'polar'}
-                      onChange={(e) => setUserInfoMode(e.target.value as 'standard' | 'polar')}
+                      checked={userInfoMode === "polar"}
+                      onChange={(e) => setUserInfoMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="userInfoModePolar" className="text-sm text-white/90">
@@ -224,12 +216,26 @@ export default function Home() {
                       id="userInfoModeProminent"
                       name="userInfoMode"
                       value="prominent"
-                      checked={userInfoMode === 'prominent'}
-                      onChange={(e) => setUserInfoMode(e.target.value as 'standard' | 'polar')}
+                      checked={userInfoMode === "prominent"}
+                      onChange={(e) => setUserInfoMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="userInfoModeProminent" className="text-sm text-white/90">
                       Prominent
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="userInfoModeShader"
+                      name="userInfoMode"
+                      value="shader"
+                      checked={userInfoMode === "shader"}
+                      onChange={(e) => setUserInfoMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="userInfoModeShader" className="text-sm text-white/90">
+                      Shader (Experimental)
                     </label>
                   </div>
                 </div>
@@ -293,13 +299,7 @@ export default function Home() {
               <div>
                 <span className="block text-sm font-semibold text-white/90 mb-3">Over Light</span>
                 <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    id="userInfoOverLight"
-                    checked={userInfoOverLight}
-                    onChange={(e) => setUserInfoOverLight(e.target.checked)}
-                    className="w-5 h-5 accent-blue-500"
-                  />
+                  <input type="checkbox" id="userInfoOverLight" checked={userInfoOverLight} onChange={(e) => setUserInfoOverLight(e.target.checked)} className="w-5 h-5 accent-blue-500" />
                   <label htmlFor="userInfoOverLight" className="text-sm text-white/90">
                     Tint liquid glass dark (use for bright backgrounds)
                   </label>
@@ -309,7 +309,7 @@ export default function Home() {
             </>
           )}
 
-          {activeTab === 'logOut' && (
+          {activeTab === "logOut" && (
             <>
               <div>
                 <span className="block text-sm font-semibold text-white/90 mb-3">Refraction Mode</span>
@@ -320,8 +320,8 @@ export default function Home() {
                       id="logoutModeStandard"
                       name="logoutMode"
                       value="standard"
-                      checked={logoutMode === 'standard'}
-                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar' | 'prominent')}
+                      checked={logoutMode === "standard"}
+                      onChange={(e) => setLogoutMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="logoutModeStandard" className="text-sm text-white/90">
@@ -334,8 +334,8 @@ export default function Home() {
                       id="logoutModePolar"
                       name="logoutMode"
                       value="polar"
-                      checked={logoutMode === 'polar'}
-                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar' | 'prominent')}
+                      checked={logoutMode === "polar"}
+                      onChange={(e) => setLogoutMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="logoutModePolar" className="text-sm text-white/90">
@@ -348,12 +348,26 @@ export default function Home() {
                       id="logoutModeProminent"
                       name="logoutMode"
                       value="prominent"
-                      checked={logoutMode === 'prominent'}
-                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar' | 'prominent')}
+                      checked={logoutMode === "prominent"}
+                      onChange={(e) => setLogoutMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="logoutModeProminent" className="text-sm text-white/90">
                       Prominent
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="logoutModeShader"
+                      name="logoutMode"
+                      value="shader"
+                      checked={logoutMode === "shader"}
+                      onChange={(e) => setLogoutMode(e.target.value as "standard" | "polar" | "prominent" | "shader")}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="logoutModeShader" className="text-sm text-white/90">
+                      Shader
                     </label>
                   </div>
                 </div>
@@ -417,13 +431,7 @@ export default function Home() {
               <div>
                 <span className="block text-sm font-semibold text-white/90 mb-3">Over Light</span>
                 <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    id="logoutOverLight"
-                    checked={logoutOverLight}
-                    onChange={(e) => setLogoutOverLight(e.target.checked)}
-                    className="w-5 h-5 accent-blue-500"
-                  />
+                  <input type="checkbox" id="logoutOverLight" checked={logoutOverLight} onChange={(e) => setLogoutOverLight(e.target.checked)} className="w-5 h-5 accent-blue-500" />
                   <label htmlFor="logoutOverLight" className="text-sm text-white/90">
                     Tint liquid glass dark (use for bright backgrounds)
                   </label>

@@ -112,3 +112,6 @@ function App() {
 | `overLight` | `boolean` | `false` | Whether the glass is over a light background |
 | `onClick` | `() => void` | - | Click handler |
 | `mouseContainer` | `React.RefObject<HTMLElement \| null> \| null` | `null` | Container element to track mouse movement on (defaults to the glass component itself) |
+| `mode` | `"standard" \| "polar" \| "prominent" \| "shader"` | `"standard"` | Refraction mode for different visual effects. `shader` is the most accurate but not the most stable. |
+| `globalMousePos` | `{ x: number; y: number }` | - | Global mouse position coordinates for manual control |
+| `mouseOffset` | `{ x: number; y: number }` | - | Mouse position offset for fine-tuning positioning |
