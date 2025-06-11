@@ -69,7 +69,7 @@ const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationI
         <feOffset in="SourceGraphic" dx="0" dy="0" result="CENTER_ORIGINAL" />
 
         {/* Red channel displacement with slight offset */}
-        <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" scale={displacementScale * -1} xChannelSelector="R" yChannelSelector="B" result="RED_DISPLACED" />
+        <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" scale={displacementScale * (mode === "shader" ? 1 : -1)} xChannelSelector="R" yChannelSelector="B" result="RED_DISPLACED" />
         <feColorMatrix
           in="RED_DISPLACED"
           type="matrix"
@@ -81,7 +81,7 @@ const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationI
         />
 
         {/* Green channel displacement */}
-        <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" scale={displacementScale * (-1 - aberrationIntensity * 0.05)} xChannelSelector="R" yChannelSelector="B" result="GREEN_DISPLACED" />
+        <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" scale={displacementScale * ((mode === "shader" ? 1 : -1) - aberrationIntensity * 0.05)} xChannelSelector="R" yChannelSelector="B" result="GREEN_DISPLACED" />
         <feColorMatrix
           in="GREEN_DISPLACED"
           type="matrix"
@@ -93,7 +93,7 @@ const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationI
         />
 
         {/* Blue channel displacement with slight offset */}
-        <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" scale={displacementScale * (-1 - aberrationIntensity * 0.1)} xChannelSelector="R" yChannelSelector="B" result="BLUE_DISPLACED" />
+        <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" scale={displacementScale * ((mode === "shader" ? 1 : -1) - aberrationIntensity * 0.1)} xChannelSelector="R" yChannelSelector="B" result="BLUE_DISPLACED" />
         <feColorMatrix
           in="BLUE_DISPLACED"
           type="matrix"
