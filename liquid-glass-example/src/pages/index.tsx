@@ -1,6 +1,6 @@
 import { Geist } from "next/font/google"
 import { useState, useRef, useCallback } from "react"
-import LiquidGlass from "liquid-glass-react"
+import LiquidGlass from "../components/src"
 import { LogOutIcon, Github } from "lucide-react"
 
 const geistSans = Geist({
@@ -17,6 +17,7 @@ export default function Home() {
   const [elasticity, setElasticity] = useState(0)
   const [cornerRadius, setCornerRadius] = useState(32)
   const [userInfoOverLight, setUserInfoOverLight] = useState(false)
+  const [userInfoMode, setUserInfoMode] = useState<'standard' | 'polar'>('standard')
 
   // Log Out Button Controls
   const [logoutDisplacementScale, setLogoutDisplacementScale] = useState(64)
@@ -26,68 +27,84 @@ export default function Home() {
   const [logoutElasticity, setLogoutElasticity] = useState(0.35)
   const [logoutCornerRadius, setLogoutCornerRadius] = useState(100)
   const [logoutOverLight, setLogoutOverLight] = useState(false)
+  const [logoutMode, setLogoutMode] = useState<'standard' | 'polar'>('standard')
 
   // Shared state
   const [activeTab, setActiveTab] = useState<'userInfo' | 'logOut'>('userInfo')
   const containerRef = useRef<HTMLDivElement>(null)
 
+  const [scroll, setScroll] = useState(0)
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    requestAnimationFrame(() => {
+      setScroll((event?.target as any)?.scrollTop)
+    })
+  }
+
+  const scrollingOverBrightSection = scroll > 230 && scroll < 500
+
   return (
     <div className={`${geistSans.className} grid grid-cols-3 shadow-2xl w-full max-w-5xl mx-auto my-10 h-screen max-h-[calc(100vh-5rem)] rounded-3xl overflow-hidden font-[family-name:var(--font-geist-sans)]`}>
       {/* Left Panel - Glass Effect Demo */}
-      <div className="flex-1 relative overflow-auto col-span-2" ref={containerRef}>
+      <div className="flex-1 relative overflow-auto col-span-2" ref={containerRef} onScroll={handleScroll}>
         <div className="w-full min-h-[200vh] absolute top-0 left-0 pb-96 mb-96">
           <img src="https://picsum.photos/2000/2000" className="w-full h-96 object-cover" />
-          <h2 className="text-2xl font-semibold my-5 text-center">Some Heading</h2>
-          <p className="px-10">Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger</p>
+          <div className="flex flex-col gap-2" id="bright-section">
+            <h2 className="text-2xl font-semibold my-5 text-center">Some Heading</h2>
+            <p className="px-10">Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger <br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger<br />Bacon ipsum dolor amet hamburger Bacon ipsum dolor amet hamburger</p>
 
+          </div>
           <img src="https://picsum.photos/1200/1200" className="w-full h-80 object-cover my-10" />
           <img src="https://picsum.photos/1400/1300" className="w-full h-72 object-cover my-10" />
           <img src="https://picsum.photos/1100/1200" className="w-full h-96 object-cover my-10 mb-96" />
         </div>
 
         {activeTab === 'userInfo' && (
-          <LiquidGlass
-            displacementScale={displacementScale}
-            blurAmount={blurAmount}
-            saturation={saturation}
-            aberrationIntensity={aberrationIntensity}
-            elasticity={elasticity}
-            cornerRadius={cornerRadius}
-            mouseContainer={containerRef}
-            overLight={userInfoOverLight}
-            style={{
-              position: "fixed",
-              top: "25%",
-              left: "40%",
-            }}
-          >
-            <div className="w-72 text-shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">User Info</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-black/10 backdrop-blur rounded-full flex items-center justify-center text-white font-semibold">JD</div>
-                  <div>
-                    <p className="font-medium">John Doe</p>
-                    <p className="text-sm text-white">Software Engineer</p>
+          <>
+            <LiquidGlass
+              displacementScale={displacementScale}
+              blurAmount={blurAmount}
+              saturation={saturation}
+              aberrationIntensity={aberrationIntensity}
+              elasticity={elasticity}
+              cornerRadius={cornerRadius}
+              mouseContainer={containerRef}
+              overLight={scrollingOverBrightSection || userInfoOverLight}
+              mode={userInfoMode}
+              style={{
+                position: "fixed",
+                top: "25%",
+                left: "40%",
+              }}
+            >
+              <div className="w-72 text-shadow-lg">
+                <h3 className="text-xl font-semibold mb-4">User Info</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-black/10 backdrop-blur rounded-full flex items-center justify-center text-white font-semibold">JD</div>
+                    <div>
+                      <p className="font-medium">John Doe</p>
+                      <p className="text-sm text-white">Software Engineer</p>
+                    </div>
                   </div>
-                </div>
-                <div className="pt-2 space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-white">Email:</span>
-                    <span className="text-sm">john.doe@example.com</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-white">Location:</span>
-                    <span className="text-sm">San Francisco, CA</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-white">Joined:</span>
-                    <span className="text-sm">March 2023</span>
+                  <div className="pt-2 space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-white">Email:</span>
+                      <span className="text-sm">john.doe@example.com</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-white">Location:</span>
+                      <span className="text-sm">San Francisco, CA</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-white">Joined:</span>
+                      <span className="text-sm">March 2023</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </LiquidGlass>
+            </LiquidGlass>
+          </>
         )}
 
         {activeTab === 'logOut' && (
@@ -99,7 +116,8 @@ export default function Home() {
             elasticity={logoutElasticity}
             cornerRadius={logoutCornerRadius}
             mouseContainer={containerRef}
-            overLight={logoutOverLight}
+            overLight={scrollingOverBrightSection || logoutOverLight}
+            mode={logoutMode}
             padding="8px 16px"
             onClick={() => {
               console.log("Logged out");
@@ -165,6 +183,41 @@ export default function Home() {
         <div className="space-y-8 flex-1">
           {activeTab === 'userInfo' && (
             <>
+              <div>
+                <span className="block text-sm font-semibold text-white/90 mb-3">Refraction Mode</span>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="userInfoModeStandard"
+                      name="userInfoMode"
+                      value="standard"
+                      checked={userInfoMode === 'standard'}
+                      onChange={(e) => setUserInfoMode(e.target.value as 'standard' | 'polar')}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="userInfoModeStandard" className="text-sm text-white/90">
+                      Standard
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="userInfoModePolar"
+                      name="userInfoMode"
+                      value="polar"
+                      checked={userInfoMode === 'polar'}
+                      onChange={(e) => setUserInfoMode(e.target.value as 'standard' | 'polar')}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="userInfoModePolar" className="text-sm text-white/90">
+                      Polar
+                    </label>
+                  </div>
+                </div>
+                <p className="text-xs text-white/50 mt-2">Controls the refraction calculation method</p>
+              </div>
+
               <div>
                 <span className="block text-sm font-semibold text-white/90 mb-3">Displacement Scale</span>
                 <div className="mb-2">
@@ -240,6 +293,41 @@ export default function Home() {
 
           {activeTab === 'logOut' && (
             <>
+              <div>
+                <span className="block text-sm font-semibold text-white/90 mb-3">Refraction Mode</span>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="logoutModeStandard"
+                      name="logoutMode"
+                      value="standard"
+                      checked={logoutMode === 'standard'}
+                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar')}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="logoutModeStandard" className="text-sm text-white/90">
+                      Standard
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="logoutModePolar"
+                      name="logoutMode"
+                      value="polar"
+                      checked={logoutMode === 'polar'}
+                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar')}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="logoutModePolar" className="text-sm text-white/90">
+                      Polar
+                    </label>
+                  </div>
+                </div>
+                <p className="text-xs text-white/50 mt-2">Controls the refraction calculation method</p>
+              </div>
+
               <div>
                 <span className="block text-sm font-semibold text-white/90 mb-3">Displacement Scale</span>
                 <div className="mb-2">
