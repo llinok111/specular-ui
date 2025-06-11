@@ -1,8 +1,8 @@
-import { useId, useState, useRef, useCallback, useEffect, forwardRef } from "react"
-import { displacementMap } from "./utils"
+import { useId, useState, useRef, useCallback, useEffect, forwardRef, CSSProperties } from "react"
+import { displacementMap, polarDisplacementMap } from "./utils"
 
 /* ---------- SVG filter (edge-only displacement) ---------- */
-const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationIntensity: number; width: number; height: number }> = ({ id, displacementScale, aberrationIntensity, width, height }) => (
+const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationIntensity: number; width: number; height: number; mode: "standard" | "polar" }> = ({ id, displacementScale, aberrationIntensity, width, height, mode }) => (
   <svg style={{ position: "absolute", width, height }} aria-hidden="true">
     <defs>
       <radialGradient id={`${id}-edge-mask`} cx="50%" cy="50%" r="50%">
@@ -11,7 +11,9 @@ const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationI
         <stop offset="100%" stopColor="white" stopOpacity="1" />
       </radialGradient>
       <filter id={id} x="-35%" y="-35%" width="170%" height="170%" colorInterpolationFilters="sRGB">
-        <feImage id="feimage" x="0" y="0" width="100%" height="100%" result="DISPLACEMENT_MAP" href={displacementMap} preserveAspectRatio="xMidYMid slice" />
+        <feImage id="feimage" x="0" y="0" width="100%" height="100%" result="DISPLACEMENT_MAP" href={
+          mode === "standard" ? displacementMap : polarDisplacementMap
+        } preserveAspectRatio="xMidYMid slice" />
 
         {/* Create edge mask using the displacement map itself */}
         <feColorMatrix
@@ -110,6 +112,7 @@ const GlassContainer = forwardRef<
     padding?: string
     glassSize?: { width: number; height: number }
     onClick?: () => void
+    mode?: "standard" | "polar"
   }>
 >(
   (
@@ -130,20 +133,23 @@ const GlassContainer = forwardRef<
       cornerRadius = 999,
       padding = "24px 32px",
       glassSize = { width: 270, height: 69 },
-      onClick
+      onClick,
+      mode = "standard"
     },
     ref,
   ) => {
     const filterId = useId()
 
+    const isFirefox = navigator.userAgent.toLowerCase().includes("firefox")
+
     const backdropStyle = {
-      filter: `url(#${filterId})`,
-      backdropFilter: `blur(${(overLight ? 20 : 4) + blurAmount * 32}px) saturate(${saturation}%)`,
+      filter: isFirefox ? null : `url(#${filterId})`,
+      backdropFilter: `blur(${(overLight ? 12 : 4) + blurAmount * 32}px) saturate(${saturation}%)`,
     }
 
     return (
       <div ref={ref} className={`relative ${className} ${active ? "active" : ""} ${Boolean(onClick) ? "cursor-pointer" : ""}`} style={style} onClick={onClick}>
-        <GlassFilter id={filterId} displacementScale={displacementScale} aberrationIntensity={aberrationIntensity} width={glassSize.width} height={glassSize.height} />
+        <GlassFilter mode={mode} id={filterId} displacementScale={displacementScale} aberrationIntensity={aberrationIntensity} width={glassSize.width} height={glassSize.height} />
 
         <div
           className="glass"
@@ -170,7 +176,7 @@ const GlassContainer = forwardRef<
               ...backdropStyle,
               position: "absolute",
               inset: "0",
-            }}
+            } as CSSProperties}
           />
 
           {/* user content stays sharp */}
@@ -208,6 +214,7 @@ interface LiquidGlassProps {
   padding?: string
   style?: React.CSSProperties
   overLight?: boolean
+  mode?: "standard" | "polar"
   onClick?: () => void
 }
 
@@ -226,6 +233,7 @@ export default function LiquidGlass({
   padding = "24px 32px",
   overLight = false,
   style = {},
+  mode = "standard",
   onClick,
 }: LiquidGlassProps) {
   const glassRef = useRef<HTMLDivElement>(null)
@@ -438,6 +446,7 @@ export default function LiquidGlass({
         active={isActive}
         overLight={overLight}
         onClick={onClick}
+        mode={mode}
       >
         {children}
       </GlassContainer>
