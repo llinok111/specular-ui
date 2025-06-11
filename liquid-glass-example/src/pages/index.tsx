@@ -17,7 +17,7 @@ export default function Home() {
   const [elasticity, setElasticity] = useState(0)
   const [cornerRadius, setCornerRadius] = useState(32)
   const [userInfoOverLight, setUserInfoOverLight] = useState(false)
-  const [userInfoMode, setUserInfoMode] = useState<'standard' | 'polar'>('standard')
+  const [userInfoMode, setUserInfoMode] = useState<'standard' | 'polar' | 'prominent'>('standard')
 
   // Log Out Button Controls
   const [logoutDisplacementScale, setLogoutDisplacementScale] = useState(64)
@@ -27,7 +27,7 @@ export default function Home() {
   const [logoutElasticity, setLogoutElasticity] = useState(0.35)
   const [logoutCornerRadius, setLogoutCornerRadius] = useState(100)
   const [logoutOverLight, setLogoutOverLight] = useState(false)
-  const [logoutMode, setLogoutMode] = useState<'standard' | 'polar'>('standard')
+  const [logoutMode, setLogoutMode] = useState<'standard' | 'polar' | 'prominent'>('standard')
 
   // Shared state
   const [activeTab, setActiveTab] = useState<'userInfo' | 'logOut'>('userInfo')
@@ -44,9 +44,9 @@ export default function Home() {
   const scrollingOverBrightSection = scroll > 230 && scroll < 500
 
   return (
-    <div className={`${geistSans.className} grid grid-cols-3 shadow-2xl w-full max-w-5xl mx-auto my-10 h-screen max-h-[calc(100vh-5rem)] rounded-3xl overflow-hidden font-[family-name:var(--font-geist-sans)]`}>
+    <div className={`${geistSans.className} grid grid-cols-1 grid-rows-2 md:grid-rows-1 md:grid-cols-3 shadow-2xl w-full max-w-5xl mx-auto md:my-10 h-screen md:max-h-[calc(100vh-5rem)] md:rounded-3xl overflow-hidden font-[family-name:var(--font-geist-sans)]`}>
       {/* Left Panel - Glass Effect Demo */}
-      <div className="flex-1 relative overflow-auto col-span-2" ref={containerRef} onScroll={handleScroll}>
+      <div className="flex-1 relative overflow-auto min-h-screen md:col-span-2" ref={containerRef} onScroll={handleScroll}>
         <div className="w-full min-h-[200vh] absolute top-0 left-0 pb-96 mb-96">
           <img src="https://picsum.photos/2000/2000" className="w-full h-96 object-cover" />
           <div className="flex flex-col gap-2" id="bright-section">
@@ -139,7 +139,7 @@ export default function Home() {
       </div>
 
       {/* Right Panel - Control Panel */}
-      <div className="col-start-3 bg-gray-900/80 h-full overflow-y-auto backdrop-blur-md border-l border-white/10 p-8 flex flex-col">
+      <div className="row-start-2 rounded-t-3xl md:rounded-none md:col-start-3 bg-gray-900/80 h-full overflow-y-auto backdrop-blur-md border-l border-white/10 p-8 flex flex-col">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-white">Glassy Boi but Web</h2>
@@ -212,6 +212,20 @@ export default function Home() {
                     />
                     <label htmlFor="userInfoModePolar" className="text-sm text-white/90">
                       Polar
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="userInfoModeProminent"
+                      name="userInfoMode"
+                      value="prominent"
+                      checked={userInfoMode === 'prominent'}
+                      onChange={(e) => setUserInfoMode(e.target.value as 'standard' | 'polar')}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="userInfoModeProminent" className="text-sm text-white/90">
+                      Prominent
                     </label>
                   </div>
                 </div>
@@ -303,7 +317,7 @@ export default function Home() {
                       name="logoutMode"
                       value="standard"
                       checked={logoutMode === 'standard'}
-                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar')}
+                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar' | 'prominent')}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="logoutModeStandard" className="text-sm text-white/90">
@@ -317,11 +331,25 @@ export default function Home() {
                       name="logoutMode"
                       value="polar"
                       checked={logoutMode === 'polar'}
-                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar')}
+                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar' | 'prominent')}
                       className="w-4 h-4 accent-blue-500"
                     />
                     <label htmlFor="logoutModePolar" className="text-sm text-white/90">
                       Polar
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="logoutModeProminent"
+                      name="logoutMode"
+                      value="prominent"
+                      checked={logoutMode === 'prominent'}
+                      onChange={(e) => setLogoutMode(e.target.value as 'standard' | 'polar' | 'prominent')}
+                      className="w-4 h-4 accent-blue-500"
+                    />
+                    <label htmlFor="logoutModeProminent" className="text-sm text-white/90">
+                      Prominent
                     </label>
                   </div>
                 </div>

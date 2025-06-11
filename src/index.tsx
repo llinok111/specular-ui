@@ -1,8 +1,21 @@
 import { useId, useState, useRef, useCallback, useEffect, forwardRef, CSSProperties } from "react"
-import { displacementMap, polarDisplacementMap } from "./utils"
+import { displacementMap, prominentDisplacementMap, polarDisplacementMap } from "./utils"
+
+const getMap = (mode: "standard" | "polar" | "prominent") => {
+  switch (mode) {
+    case "standard":
+      return displacementMap;
+    case "polar":
+      return polarDisplacementMap;
+    case "prominent":
+      return prominentDisplacementMap;
+    default:
+      throw new Error(`Invalid mode: ${mode}`);
+  }
+};
 
 /* ---------- SVG filter (edge-only displacement) ---------- */
-const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationIntensity: number; width: number; height: number; mode: "standard" | "polar" }> = ({ id, displacementScale, aberrationIntensity, width, height, mode }) => (
+const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationIntensity: number; width: number; height: number; mode: "standard" | "polar" | "prominent" }> = ({ id, displacementScale, aberrationIntensity, width, height, mode }) => (
   <svg style={{ position: "absolute", width, height }} aria-hidden="true">
     <defs>
       <radialGradient id={`${id}-edge-mask`} cx="50%" cy="50%" r="50%">
@@ -12,7 +25,7 @@ const GlassFilter: React.FC<{ id: string; displacementScale: number; aberrationI
       </radialGradient>
       <filter id={id} x="-35%" y="-35%" width="170%" height="170%" colorInterpolationFilters="sRGB">
         <feImage id="feimage" x="0" y="0" width="100%" height="100%" result="DISPLACEMENT_MAP" href={
-          mode === "standard" ? displacementMap : polarDisplacementMap
+          getMap(mode)
         } preserveAspectRatio="xMidYMid slice" />
 
         {/* Create edge mask using the displacement map itself */}
@@ -112,7 +125,7 @@ const GlassContainer = forwardRef<
     padding?: string
     glassSize?: { width: number; height: number }
     onClick?: () => void
-    mode?: "standard" | "polar"
+    mode?: "standard" | "polar" | "prominent"
   }>
 >(
   (
@@ -214,7 +227,7 @@ interface LiquidGlassProps {
   padding?: string
   style?: React.CSSProperties
   overLight?: boolean
-  mode?: "standard" | "polar"
+  mode?: "standard" | "polar" | "prominent"
   onClick?: () => void
 }
 
