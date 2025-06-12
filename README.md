@@ -6,17 +6,13 @@ Card Example              |  Button Example
 :-------------------------:|:-------------------------:
 ![](https://github.com/rdev/liquid-glass-react/raw/master/assets/card.png)  |  ![](https://github.com/rdev/liquid-glass-react/raw/master/assets/button.png)
 
-## Video
+## 🎬  Demo
 
-[See it in action](https://github.com/rdev/liquid-glass-react/blob/master/assets/video.mov)
+[Click here](https://liquid-glass.maxrovensky.com) to see it in action!
 
+![project liquid gif](./assets/project-liquid.gif)
 
-## Demo
-
-[See it in action but touch it](https://liquid-glass.maxrovensky.com)
-
-
-## Features
+## ✨ Features
 
 - Proper edgy bending and refraction
 - Multiple refraction modes
@@ -30,7 +26,7 @@ Card Example              |  Button Example
 
 > **⚠️ NOTE:** Safari and Firefox only partially support the effect (displacement will not be visible)
 
-## Usage
+## 🚀 Usage
 
 ### Installation
 
