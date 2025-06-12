@@ -8,7 +8,8 @@ Card Example              |  Button Example
 
 ## Video
 
-[See it in action](https://raw.githubusercontent.com/rdev/liquid-glass-react/refs/heads/master/assets/video.mov?token=GHSAT0AAAAAACPNNASADXWXU2ZZA2OCMJ3W2CIWMMA)
+[See it in action](https://github.com/rdev/liquid-glass-react/blob/master/assets/video.mov)
+
 
 ## Demo
 
