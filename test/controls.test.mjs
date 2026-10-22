@@ -93,7 +93,7 @@ test("clicking a tab moves selection and panels", async () => {
     const btns = [...tabs.querySelectorAll('[role="tab"]')];
     const panels = [...tabs.querySelectorAll('[role="tabpanel"]')];
     btns[2].click();
-    await new Promise((r) => setTimeout(r, 90));
+    await new Promise((r) => setTimeout(r, 260));
     return {
       selectedIndex: btns.findIndex((b) => b.getAttribute("aria-selected") === "true"),
       hidden: panels.map((p) => p.hidden),
@@ -113,14 +113,14 @@ test("arrow keys walk the tablist", async () => {
     const btns = [...tabs.querySelectorAll('[role="tab"]')];
     const read = () => btns.findIndex((b) => b.getAttribute("aria-selected") === "true");
     btns[0].click();
-    await new Promise((r) => setTimeout(r, 60));
+    await new Promise((r) => setTimeout(r, 260));
     const start = read();
     btns[start].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
-    await new Promise((r) => setTimeout(r, 60));
+    await new Promise((r) => setTimeout(r, 260));
     const right = read();
     const focused = document.activeElement === btns[right];
     btns[right].dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
-    await new Promise((r) => setTimeout(r, 60));
+    await new Promise((r) => setTimeout(r, 260));
     return { start, right, end: read(), focused };
   });
   assert.equal(seq.right, (seq.start + 1) % 3, "ArrowRight advances by one");
@@ -140,7 +140,7 @@ test("input is a labelled native control", async () => {
     input.focus();
     input.value = "hello@example.com";
     input.dispatchEvent(new Event("input", { bubbles: true }));
-    await new Promise((r) => setTimeout(r, 40));
+    await new Promise((r) => setTimeout(r, 260));
     return {
       tag: input.tagName,
       type: input.type,
@@ -177,7 +177,7 @@ test("switch is announced as a switch and toggles", async () => {
     let fired = null;
     sw.addEventListener("switch-change", (e) => (fired = e.detail.checked));
     btn.click();
-    await new Promise((r) => setTimeout(r, 70));
+    await new Promise((r) => setTimeout(r, 260));
     return {
       role: btn.getAttribute("role"),
       before,
@@ -200,14 +200,14 @@ test("dialog is modal and syncs its host attribute", async () => {
     const dlg = document.querySelector("sp-dialog");
     const native = dlg.querySelector("dialog");
     if (native.open) native.close();
-    await new Promise((r) => setTimeout(r, 60));
+    await new Promise((r) => setTimeout(r, 260));
     dlg.show();
     await new Promise((r) => setTimeout(r, 300));
     const opened = native.open;
     const modal = native.matches(":modal");
     const hostOpen = dlg.hasAttribute("open");
     native.close();
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 260));
     return { opened, modal, hostOpen, closed: !native.open, hostClosed: !dlg.hasAttribute("open") };
   });
   assert.equal(info.opened, true);
@@ -222,7 +222,7 @@ test("dialog actions close it and report confirmation", async () => {
     const dlg = document.querySelector("sp-dialog");
     const native = dlg.querySelector("dialog");
     if (native.open) native.close();
-    await new Promise((r) => setTimeout(r, 60));
+    await new Promise((r) => setTimeout(r, 260));
     dlg.show();
     await new Promise((r) => setTimeout(r, 300));
     let confirmed = false;

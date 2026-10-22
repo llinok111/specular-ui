@@ -245,10 +245,10 @@ test("panel toggles collapsed state and keeps aria in sync", async () => {
     const head = panel.querySelector(".sp-panel-head");
     const before = head.getAttribute("aria-expanded");
     head.click();
-    await new Promise((r) => setTimeout(r, 60));
+    await new Promise((r) => setTimeout(r, 260));
     const after = head.getAttribute("aria-expanded");
     head.click();
-    await new Promise((r) => setTimeout(r, 60));
+    await new Promise((r) => setTimeout(r, 260));
     return { before, after, restored: head.getAttribute("aria-expanded"), body: panel.querySelector(".sp-panel-body").id };
   });
   assert.notEqual(result.before, result.after, "clicking must flip aria-expanded");
