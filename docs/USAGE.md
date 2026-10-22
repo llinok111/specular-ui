@@ -201,6 +201,91 @@ panel.addEventListener("panel-toggle", (e) => {
 sp-navbar[data-scrolled="true"] .sp-surface { --sp-frost-blur: 32px; }
 ```
 
+### `<sp-tabs>`
+
+```html
+<sp-tabs material="frost" value="材质">
+  <div data-tab="材质">面板一</div>
+  <div data-tab="组件">面板二</div>
+  <div data-tab="降级">面板三</div>
+</sp-tabs>
+```
+
+子元素带 `data-tab` 即为一块面板，`data-tab` 的值就是标签文字。组件负责生成 `role="tablist"` / `role="tab"` / `role="tabpanel"` 以及 `aria-selected`、`aria-controls`、`aria-labelledby`。
+
+| 属性 / 成员 | 说明 |
+|---|---|
+| `value` | 当前标签文字；读写，写会切换面板 |
+| `tab-count`（只读 getter） | — |
+| 事件 `tab-change` | `detail: { value, index }` |
+
+键盘：`←` / `→` 循环切换，`Home` / `End` 跳到首尾。**roving tabindex**：只有当前标签是 `tabIndex=0`，其余为 `-1`，所以 Tab 键会跳过整组标签而不是逐个走。
+
+选中指示是一块滑动的底板（`.sp-tab-indicator`），不是每个标签各涂一层背景 —— 一个合成层，而且它能带上材质自己的斜向高光。
+
+### `<sp-input>`
+
+```html
+<sp-input material="frost" label="邮箱" type="email" placeholder="you@example.com"></sp-input>
+```
+
+| 属性 | 说明 |
+|---|---|
+| `label` | 可见标签文字，同时作为 `<label for>` 的可访问名称 |
+| `type` / `placeholder` / `name` | 转发到内部 `<input>` |
+| `value` | 读写；写入会标记为已触碰，后续不再被属性覆盖 |
+| `readonly` / `disabled` | 转发到内部输入框 |
+
+内部是 `<label class="sp-field">` 包着真正的 `<input>`，所以点击标签文字会聚焦输入框，密码管理器和自动填充也认得它。
+
+> 焦点在这里被表达两次：边框按光源方向发亮（与其它表面同一套语言），外加 `outline` 焦点环（给看不出色相变化的用户）。
+
+### `<sp-switch>`
+
+```html
+<sp-switch material="metal" label="自动漂移" checked></sp-switch>
+```
+
+| 属性 / 成员 | 说明 |
+|---|---|
+| `checked` | 布尔，可读写 |
+| `label` | 右侧文字 |
+| `disabled` | 禁用 |
+| 事件 `switch-change` | `detail: { checked }` |
+
+内部是 `<button role="switch" aria-checked>`，不是伪装成开关的复选框。`Space` 和 `Enter` 都能切换 —— 这是原生按钮的契约，不需要额外代码。
+
+### `<sp-dialog>`
+
+```html
+<sp-dialog material="liquid" heading="放弃更改？">
+  <p>未保存的内容会丢失。</p>
+  <div data-slot="actions">
+    <sp-button variant="ghost" data-close>取消</sp-button>
+    <sp-button variant="danger" data-confirm>放弃</sp-button>
+  </div>
+</sp-dialog>
+```
+
+```js
+dialog.show();
+dialog.close();
+dialog.open;   // 只读
+```
+
+| 属性 / 成员 | 说明 |
+|---|---|
+| `heading` | 标题，同时作为 `aria-labelledby` |
+| `open` | 与原生 `dialog.open` 双向同步 |
+| `show()` / `close()` | 调用原生 `showModal()` / `close()` |
+| `data-close` | 带此属性的子元素点击后关闭 |
+| `data-confirm` | 带此属性的子元素点击后派发 `dialog-confirm` 再关闭 |
+| 事件 | `dialog-close` / `dialog-confirm` |
+
+用原生 `<dialog>` 而不是自绘遮罩：焦点困在内部、`Esc` 关闭、背景自动 `inert`、进入 top layer，全部由平台提供。材质加在对话框**内部**，因为带滤镜的元素一旦进入 top layer 会自己成为包含块，背景就看不到了。
+
+`::backdrop` 也做了处理：半透明压暗 + `backdrop-filter` 模糊，档位切换时一起降级。
+
 ---
 
 ## 4. 主题变量

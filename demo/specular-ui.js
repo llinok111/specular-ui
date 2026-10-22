@@ -854,6 +854,371 @@ var SpNavbar = class extends SpecularElement {
 };
 define("sp-navbar", SpNavbar);
 
+// src/elements/tabs.js
+var SpTabs = class extends SpecularElement {
+  static shell = '<div class="sp-el sp-tabs-inner">' + surfaceMarkup() + '<div class="sp-tabs-stack"><div class="sp-tablist" role="tablist" data-sp-control></div><div class="sp-tabpanels" data-sp-panels></div></div></div>';
+  static get observedAttributes() {
+    return [...super.observedAttributes, "value"];
+  }
+  _mount() {
+    const panels = [];
+    for (const child of [...this.children]) {
+      if (!(child instanceof HTMLElement) || !child.hasAttribute("data-tab"))
+        continue;
+      panels.push({ label: child.getAttribute("data-tab") || "", node: child });
+    }
+    super._mount();
+    this._panels = panels;
+    this._tabs = [];
+    const list = this.querySelector(".sp-tablist");
+    const host = this.querySelector("[data-sp-panels]");
+    if (!list || !host)
+      return;
+    panels.forEach((p, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sp-tab";
+      btn.id = `sp-tab-${this._uid()}-${i}`;
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-controls", `sp-panel-${this._uid()}-${i}`);
+      btn.tabIndex = -1;
+      btn.textContent = p.label;
+      list.appendChild(btn);
+      this._tabs.push(btn);
+      const panel = document.createElement("div");
+      panel.className = "sp-tabpanel";
+      panel.id = `sp-panel-${this._uid()}-${i}`;
+      panel.setAttribute("role", "tabpanel");
+      panel.setAttribute("aria-labelledby", btn.id);
+      panel.tabIndex = 0;
+      panel.appendChild(p.node);
+      host.appendChild(panel);
+    });
+    if (!list.querySelector(".sp-tab-indicator")) {
+      const ind = document.createElement("span");
+      ind.className = "sp-tab-indicator";
+      ind.setAttribute("aria-hidden", "true");
+      list.appendChild(ind);
+    }
+    list.addEventListener("keydown", (e) => this._onKey(e));
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest(".sp-tab");
+      if (btn && this._tabs.includes(btn))
+        this._select(this._tabs.indexOf(btn), true);
+    });
+    const initial = this.getAttribute("value") ?? (this._tabs[0] ? this._panels[0].label : null);
+    const idx = Math.max(0, this._panels.findIndex((p) => p.label === initial));
+    this._select(idx, false);
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    if (this._tabs?.length)
+      this._select(this._index ?? 0, false);
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+    if (name === "value" && this._tabs?.length) {
+      const idx = this._panels.findIndex((p) => p.label === newValue);
+      if (idx >= 0)
+        this._select(idx, false);
+    }
+  }
+  _uid() {
+    if (!this._id)
+      this._id = Math.random().toString(36).slice(2, 8);
+    return this._id;
+  }
+  get value() {
+    return this._panels?.[this._index]?.label ?? null;
+  }
+  set value(v) {
+    this.setAttribute("value", String(v));
+  }
+  _select(index, focus) {
+    if (!this._tabs.length)
+      return;
+    const i = Math.max(0, Math.min(this._tabs.length - 1, index));
+    this._index = i;
+    this._tabs.forEach((btn, n) => {
+      const on = n === i;
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+      btn.tabIndex = on ? 0 : -1;
+      btn.classList.toggle("is-active", on);
+    });
+    this.querySelectorAll(".sp-tabpanel").forEach((p, n) => {
+      p.hidden = n !== i;
+    });
+    const ind = this.querySelector(".sp-tab-indicator");
+    const active = this._tabs[i];
+    if (ind && active) {
+      ind.style.width = `${active.offsetWidth}px`;
+      ind.style.transform = `translateX(${active.offsetLeft}px)`;
+      ind.dataset.ready = "true";
+    }
+    if (focus)
+      active.focus();
+    if (this.getAttribute("value") !== this._panels[i].label) {
+      this.setAttribute("value", this._panels[i].label);
+    }
+    this.dispatchEvent(
+      new CustomEvent("tab-change", { bubbles: true, detail: { value: this._panels[i].label, index: i } })
+    );
+  }
+  _onKey(e) {
+    const last = this._tabs.length - 1;
+    let next = null;
+    if (e.key === "ArrowRight")
+      next = this._index >= last ? 0 : this._index + 1;
+    else if (e.key === "ArrowLeft")
+      next = this._index <= 0 ? last : this._index - 1;
+    else if (e.key === "Home")
+      next = 0;
+    else if (e.key === "End")
+      next = last;
+    if (next === null)
+      return;
+    e.preventDefault();
+    this._select(next, true);
+  }
+};
+define("sp-tabs", SpTabs);
+
+// src/elements/input.js
+var inputSeq = 0;
+var SpInput = class extends SpecularElement {
+  static shell = '<label class="sp-el sp-field" data-sp-control>' + surfaceMarkup() + '<span class="sp-field-stack"><span class="sp-field-label" data-sp-label hidden></span><input class="sp-field-input" data-sp-input></span></label>';
+  static defaultMaterial = "frost";
+  static get observedAttributes() {
+    return [...super.observedAttributes, "label", "placeholder", "type", "name", "value", "readonly"];
+  }
+  _mount() {
+    super._mount();
+    this._id = `sp-input-${++inputSeq}`;
+    const labelEl = this.querySelector("label.sp-field");
+    const caption = this.querySelector("[data-sp-label]");
+    const input = this.querySelector("[data-sp-input]");
+    if (!input)
+      return;
+    input.id = this._id;
+    if (labelEl)
+      labelEl.setAttribute("for", this._id);
+    if (caption)
+      caption.id = `${this._id}-caption`;
+    this._syncAll();
+    input.addEventListener("input", () => {
+      this._value = input.value;
+      this.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    input.addEventListener("change", () => {
+      this.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    this._syncAll();
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+    this._syncAll();
+  }
+  _syncAll() {
+    const caption = this.querySelector("[data-sp-label]");
+    const input = this.querySelector("[data-sp-input]");
+    if (!input)
+      return;
+    const text = this.getAttribute("label") || "";
+    if (caption) {
+      caption.textContent = text;
+      caption.hidden = !text;
+    }
+    for (const attr of ["placeholder", "type", "name"]) {
+      const v = this.getAttribute(attr);
+      if (v != null)
+        input.setAttribute(attr, v);
+    }
+    if (this.hasAttribute("readonly"))
+      input.readOnly = true;
+    else
+      input.readOnly = false;
+    if (!this._touched && this.hasAttribute("value"))
+      input.value = this.getAttribute("value");
+    if (this.hasAttribute("disabled"))
+      input.disabled = true;
+    else
+      input.disabled = false;
+    if (text)
+      input.removeAttribute("aria-label");
+    else
+      input.setAttribute("aria-label", this.getAttribute("aria-label") || this.getAttribute("placeholder") || "input");
+  }
+  get value() {
+    return this.querySelector("[data-sp-input]")?.value ?? "";
+  }
+  set value(v) {
+    this._touched = true;
+    const input = this.querySelector("[data-sp-input]");
+    if (input)
+      input.value = String(v);
+  }
+  focus() {
+    this.querySelector("[data-sp-input]")?.focus();
+  }
+};
+define("sp-input", SpInput);
+
+// src/elements/switch.js
+var SpSwitch = class extends SpecularElement {
+  static shell = '<button class="sp-el sp-switch" type="button" role="switch" data-sp-control aria-checked="false">' + surfaceMarkup() + '<span class="sp-switch-stack"><span class="sp-switch-track" aria-hidden="true"><span class="sp-switch-thumb"></span></span><span class="sp-switch-label" data-sp-label hidden></span></span></button>';
+  static defaultMaterial = "metal";
+  static get observedAttributes() {
+    return [...super.observedAttributes, "checked", "label", "disabled"];
+  }
+  _mount() {
+    super._mount();
+    const btn = this._control();
+    if (!btn || btn.dataset.spBound)
+      return;
+    btn.dataset.spBound = "1";
+    btn.addEventListener("click", () => {
+      if (this.hasAttribute("disabled"))
+        return;
+      const next = !this.hasAttribute("checked");
+      this.toggleAttribute("checked", next);
+      this.dispatchEvent(
+        new CustomEvent("switch-change", { bubbles: true, detail: { checked: next } })
+      );
+    });
+    this._sync();
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    this._sync();
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+    this._sync();
+  }
+  _sync() {
+    const btn = this._control();
+    if (!btn)
+      return;
+    const on = this.hasAttribute("checked");
+    btn.setAttribute("aria-checked", on ? "true" : "false");
+    btn.disabled = this.hasAttribute("disabled");
+    this.dataset.checked = on ? "true" : "false";
+    const label = this.querySelector("[data-sp-label]");
+    const text = this.getAttribute("label") || "";
+    if (label) {
+      label.textContent = text;
+      label.hidden = !text;
+    }
+    if (!text)
+      btn.setAttribute("aria-label", this.getAttribute("aria-label") || "toggle");
+  }
+  get checked() {
+    return this.hasAttribute("checked");
+  }
+  set checked(v) {
+    this.toggleAttribute("checked", Boolean(v));
+  }
+};
+define("sp-switch", SpSwitch);
+
+// src/elements/dialog.js
+var SpDialog = class extends SpecularElement {
+  static shell = '<dialog class="sp-dialog"><div class="sp-el sp-dialog-inner">' + surfaceMarkup() + '<div class="sp-dialog-stack"><h2 class="sp-dialog-title" data-sp-title hidden></h2><div class="sp-dialog-body" data-sp-slot></div><div class="sp-dialog-actions" data-sp-foot></div></div></div></dialog>';
+  static get observedAttributes() {
+    return [...super.observedAttributes, "heading", "open"];
+  }
+  _mount() {
+    const actions = [];
+    for (const node of this.querySelectorAll('[data-slot="actions"]')) {
+      for (const child of [...node.childNodes])
+        actions.push(child);
+    }
+    super._mount();
+    const foot = this.querySelector("[data-sp-foot]");
+    if (foot && actions.length) {
+      for (const a of actions)
+        foot.appendChild(a);
+      foot.hidden = false;
+    } else if (foot) {
+      foot.hidden = true;
+    }
+    const dlg = this.querySelector("dialog");
+    if (!dlg)
+      return;
+    dlg.addEventListener("close", () => {
+      this.removeAttribute("open");
+      this.dispatchEvent(new CustomEvent("dialog-close", { bubbles: true }));
+    });
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg)
+        this.close();
+      const closer = e.target.closest?.("[data-close]");
+      if (closer)
+        this.close();
+      if (e.target.closest?.("[data-confirm]")) {
+        this.dispatchEvent(new CustomEvent("dialog-confirm", { bubbles: true }));
+        this.close();
+      }
+    });
+    this._syncTitle();
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    this._syncTitle();
+    if (this.hasAttribute("open"))
+      this.show();
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+    if (name === "heading")
+      this._syncTitle();
+    if (name === "open") {
+      const dlg = this.querySelector("dialog");
+      if (!dlg)
+        return;
+      if (newValue !== null && !dlg.open)
+        this.show();
+      else if (newValue === null && dlg.open)
+        dlg.close();
+    }
+  }
+  _syncTitle() {
+    const title = this.querySelector("[data-sp-title]");
+    const dlg = this.querySelector("dialog");
+    const text = this.getAttribute("heading") || "";
+    if (title) {
+      title.textContent = text;
+      title.hidden = !text;
+    }
+    if (dlg) {
+      if (text)
+        dlg.setAttribute("aria-labelledby", title.id || (title.id = `sp-dialog-title-${Math.random().toString(36).slice(2, 7)}`));
+      else
+        dlg.removeAttribute("aria-labelledby");
+    }
+  }
+  show() {
+    const dlg = this.querySelector("dialog");
+    if (!dlg || dlg.open)
+      return;
+    dlg.showModal();
+    this.setAttribute("open", "");
+  }
+  close() {
+    const dlg = this.querySelector("dialog");
+    if (!dlg || !dlg.open)
+      return;
+    dlg.close();
+  }
+  get open() {
+    return Boolean(this.querySelector("dialog")?.open);
+  }
+};
+define("sp-dialog", SpDialog);
+
 // src/core/capability.js
 var TIER = {
   FULL: 0,

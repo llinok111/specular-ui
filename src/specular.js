@@ -13,6 +13,10 @@ import "./elements/button.js";
 import "./elements/card.js";
 import "./elements/panel.js";
 import "./elements/navbar.js";
+import "./elements/tabs.js";
+import "./elements/input.js";
+import "./elements/switch.js";
+import "./elements/dialog.js";
 
 import {
   TIER,

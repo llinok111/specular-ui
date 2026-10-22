@@ -423,6 +423,7 @@
   <sp-navbar brand="Specular" material="frost" compact="hide-actions">
     <a class="sp-nav-link" href="#materials" aria-current="page">材质</a>
     <a class="sp-nav-link" href="#components">组件</a>
+    <a class="sp-nav-link" href="#controls">控件</a>
     <a class="sp-nav-link" href="#light">光照</a>
     <a class="sp-nav-link" href="#tiers">降级</a>
     <div data-slot="actions">
@@ -530,6 +531,51 @@
     </div>
   </section>
 
+  <!-- ==================== CONTROLS ==================== -->
+  <section id="controls" class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2 class="sec-title">控件</h2>
+        <p class="sec-note">表单控件读同一盏灯：输入框聚焦时边框按光源方向发亮，开关滑块继承金属径向高光，标签页的滑动板带材质的斜向高光。</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <sp-tabs material="frost" value="材质">
+        <div data-tab="材质">
+          <p style="margin:0 0 10px">四种材质共用同一组变量，切换环境时整块一起换，不需要逐个覆盖。</p>
+          <div class="controls">
+            <sp-button size="sm" material="liquid">液态</sp-button>
+            <sp-button size="sm" material="metal">金属</sp-button>
+            <sp-button size="sm" material="frost">磨砂</sp-button>
+            <sp-button size="sm" material="holo">全息</sp-button>
+          </div>
+        </div>
+        <div data-tab="光照">
+          <p style="margin:0">指针即光源。标签页的滑动板高光方向随 <code>--sp-angle</code> 变化，与旁边的按钮一致。</p>
+        </div>
+        <div data-tab="降级">
+          <p style="margin:0">标签页的滑动板在 <code>static</code> 档会退化为纯色块，因为它依赖同一套模糊与渐变 token。</p>
+        </div>
+      </sp-tabs>
+
+      <sp-card material="metal" heading="表单控件">
+        <div class="stack-gap">
+          <sp-input material="frost" label="邮箱" type="email" placeholder="you@example.com"></sp-input>
+          <sp-input material="frost" label="禁用态" value="不可编辑" disabled></sp-input>
+          <div class="controls">
+            <sp-switch material="metal" label="自动漂移" checked></sp-switch>
+            <sp-switch material="liquid" label="色散"></sp-switch>
+          </div>
+          <div class="controls">
+            <sp-button id="openDialog" variant="primary">打开对话框</sp-button>
+            <span style="font-size:var(--sp-fs-xs);color:var(--sp-ink-3)">原生 &lt;dialog&gt; · Esc 关闭</span>
+          </div>
+        </div>
+      </sp-card>
+    </div>
+  </section>
+
   <!-- ==================== LIGHT ==================== -->
   <section id="light" class="wrap">
     <div class="sec-head">
@@ -614,6 +660,14 @@
     </div>
   </footer>
 </main>
+
+<sp-dialog material="liquid" heading="放弃更改？">
+  <p>未保存的材质参数会丢失。这个对话框用的是原生 <code>&lt;dialog&gt;</code>，焦点被困在内部，Esc 直接关闭。</p>
+  <div data-slot="actions">
+    <sp-button variant="ghost" data-close>取消</sp-button>
+    <sp-button variant="danger" data-confirm>放弃</sp-button>
+  </div>
+</sp-dialog>
 
 <script type="module">
   import * as S from "./specular-ui.js";
@@ -775,6 +829,15 @@
   refreshDiag();
 
   // --------------------------------------------------------------- misc -----
+  const dlg = document.querySelector("sp-dialog");
+  $("#openDialog").addEventListener("click", () => dlg.show());
+  dlg.addEventListener("dialog-confirm", () => {
+    const btn = $("#openDialog");
+    const label = btn.querySelector("span") || btn;
+    label.textContent = "已放弃";
+    setTimeout(() => (label.textContent = "打开对话框"), 1600);
+  });
+
   $("#cta").addEventListener("click", () => $("#materials").scrollIntoView());
   $("#cta2").addEventListener("click", () => $("#light").scrollIntoView());
   $("#cta3").addEventListener("click", () => (location.href = "./usage.html"));

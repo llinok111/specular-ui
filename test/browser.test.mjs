@@ -72,10 +72,15 @@ test("registers all four custom elements", async () => {
 
 // ------------------------------------------------------------- rendering ----
 
-test("every component builds the four optical layers", async () => {
+test("every mounted component builds the four optical layers", async () => {
   const bad = await page.evaluate(() => {
     const out = [];
-    for (const el of document.querySelectorAll("sp-button, sp-card, sp-panel, sp-navbar")) {
+    const sel = "sp-button, sp-card, sp-panel, sp-navbar, sp-tabs, sp-input, sp-switch, sp-dialog";
+    for (const el of document.querySelectorAll(sel)) {
+      // Controls inside a closed <dialog> are display:none by design; measuring
+      // them would report 0x0 and say nothing about the component.
+      if (el.closest("dialog:not([open])")) continue;
+      if (el.tagName === "SP-DIALOG" && !el.open) continue;
       const surface = el.querySelector(".sp-surface");
       const sheen = el.querySelector(".sp-sheen");
       const edge = el.querySelector(".sp-edge");
@@ -85,7 +90,7 @@ test("every component builds the four optical layers", async () => {
       }
       const r = surface.getBoundingClientRect();
       if (r.width < 2 || r.height < 2) {
-        out.push(`${el.tagName.toLowerCase()} surface ${r.width}x${r.height}`);
+        out.push(`${el.tagName.toLowerCase()} surface ${Math.round(r.width)}x${Math.round(r.height)}`);
       }
     }
     return out;

@@ -67,6 +67,12 @@ Specular 只定义**一盏灯**：
 | `<sp-card>` | `<div role="group">` | `eyebrow` / `heading` / `interactive`（Enter、Space 可触发） |
 | `<sp-panel>` | `<button aria-expanded>` + 区域 | `heading` / `collapsed` / `collapsible` |
 | `<sp-navbar>` | `<nav>` | `brand` / `mark` / 滚动时自动提升 `data-scrolled` |
+| `<sp-tabs>` | `<button role="tab">` × N | `value`；方向键 / Home / End，roving tabindex |
+| `<sp-input>` | `<label for>` + `<input>` | `label` / `type` / `placeholder` / `value` / `readonly` |
+| `<sp-switch>` | `<button role="switch">` | `checked` / `label`；Space、Enter 切换 |
+| `<sp-dialog>` | 原生 `<dialog>` | `heading`；`show()` / `close()`，焦点困于内部 |
+
+八个组件，八个真实控件。没有任何一个是"用 div 画出来再补 `role`"。
 
 组件用 light DOM 而不是 Shadow DOM：主题变量正常继承，全局覆盖依然有效，`::part` 那套仪式完全不需要。
 
@@ -103,18 +109,20 @@ setAmbience("studio");
 
 | 文件 | 原始 | gzip |
 |---|---|---|
-| `specular-ui.js` | 43.8 KB | 12.2 KB |
-| `specular-ui.css` | 24.6 KB | 5.1 KB |
+| `specular-ui.js` | 55.7 KB | 14.5 KB |
+| `specular-ui.css` | 31.5 KB | 6.0 KB |
 
 ## 测试
 
 ```bash
 npm test                # 40 项：纯函数单测 + 四套环境的对比度断言
-npm run test:browser    # 35 项浏览器实测（Chrome / Playwright）
+npm run test:browser    # 46 项浏览器实测（Chrome / Playwright）
 npm run audit:contrast  # 打印 36 组 ink × page 的 WCAG 比值
 ```
 
-浏览器测试覆盖渲染完整性、键盘可达性、ARIA 同步、光源传播、四档降级、375px 视口无横向溢出、44px 触控目标、滤镜缓存命中率。断言的都是"用户会注意到"的东西，不测实现细节。
+浏览器测试覆盖渲染完整性、键盘可达性、ARIA 同步（tablist / switch / dialog 的完整契约）、光源传播、四档降级、375px 视口无横向溢出、44px 触控目标、滤镜缓存命中率。断言的都是"用户会注意到"的东西，不测实现细节。
+
+`<sp-tabs>` 的测试专门检查 roving tabindex 只有一个 0、每个 tab 的 `aria-controls` 指向真实面板、每块面板的 `aria-labelledby` 指回自己的 tab —— 这三条是手写标签页最常漏的。
 
 对比度是这类型设计最容易翻车的地方 —— 玻璃的可见背景是"页面 + 浸染层"，一个在深色环境里够亮的辅助灰，到了纸本环境只剩 **2.53:1**。所以 ink 值不是调出来的，是**解出来的**：`scripts/solve-ink.mjs` 反解出每个环境仍能清过 4.5:1 的最浅值，`test/contrast.test.mjs` 把结果锁死。四套环境 × 3 级墨色 × 3 档页面 × 玻璃叠加 = 36 组，当前最低 **4.83:1**。
 

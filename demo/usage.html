@@ -72,6 +72,7 @@
       <a href="#card">卡片</a>
       <a href="#panel">面板</a>
       <a href="#navbar">导航</a>
+      <a href="#controls">控件</a>
       <a href="#tokens">主题变量</a>
       <a href="#light">光照</a>
       <a href="#tiers">降级</a>
@@ -177,6 +178,52 @@ setAmbience("studio");</code></pre>
     <p>滚动超过 8px 自动加 <code>data-scrolled="true"</code>，可用它加深阴影。</p>
   </section>
 
+  <section id="controls">
+    <h2>表单控件</h2>
+    <p>四个更常见的控件，内部同样是真实元素：<code>&lt;button role="tab"&gt;</code>、<code>&lt;label for&gt;</code> + <code>&lt;input&gt;</code>、<code>&lt;button role="switch"&gt;</code>、原生 <code>&lt;dialog&gt;</code>。</p>
+    <sp-tabs material="frost" value="代码">
+      <div data-tab="代码">
+<pre style="margin:0"><code>&lt;sp-tabs material="frost" value="材质"&gt;
+  &lt;div data-tab="材质"&gt;面板一&lt;/div&gt;
+  &lt;div data-tab="组件"&gt;面板二&lt;/div&gt;
+&lt;/sp-tabs&gt;</code></pre>
+      </div>
+      <div data-tab="键盘">
+        <p style="margin:0">方向键循环切换，<code>Home</code> / <code>End</code> 跳首尾；只有当前标签在 Tab 序列里（roving tabindex），所以 Tab 会整组跳过。</p>
+      </div>
+      <div data-tab="ARIA">
+        <p style="margin:0"><code>role="tablist" / "tab" / "tabpanel"</code>，配 <code>aria-selected</code>、<code>aria-controls</code>、<code>aria-labelledby</code>。这三条是手写标签页最常漏的，测试里逐条断言。</p>
+      </div>
+    </sp-tabs>
+
+    <div style="height:18px"></div>
+    <div class="demo-row" style="align-items:flex-start">
+      <sp-input material="frost" label="邮箱" placeholder="you@example.com"></sp-input>
+      <sp-switch material="metal" label="自动漂移" checked></sp-switch>
+      <sp-switch material="liquid" label="色散"></sp-switch>
+      <sp-button id="docDialogBtn" variant="primary">打开对话框</sp-button>
+    </div>
+<pre><code>&lt;sp-input material="frost" label="邮箱" type="email" placeholder="you@example.com"&gt;&lt;/sp-input&gt;
+&lt;sp-switch material="metal" label="自动漂移" checked&gt;&lt;/sp-switch&gt;
+
+&lt;sp-dialog material="liquid" heading="放弃更改？"&gt;
+  &lt;p&gt;未保存的内容会丢失。&lt;/p&gt;
+  &lt;div data-slot="actions"&gt;
+    &lt;sp-button variant="ghost" data-close&gt;取消&lt;/sp-button&gt;
+    &lt;sp-button variant="danger" data-confirm&gt;放弃&lt;/sp-button&gt;
+  &lt;/div&gt;
+&lt;/sp-dialog&gt;</code></pre>
+    <p class="note">对话框用原生 <code>&lt;dialog&gt;</code>：焦点困在内部、Esc 关闭、背景 <code>inert</code>、进入 top layer 都由平台提供。材质加在对话框内部 —— 带滤镜的元素进入 top layer 会自己成为包含块，背景就看不到了。</p>
+  </section>
+
+  <sp-dialog material="liquid" heading="放弃更改？">
+    <p>未保存的材质参数会丢失。</p>
+    <div data-slot="actions">
+      <sp-button variant="ghost" data-close>取消</sp-button>
+      <sp-button variant="danger" data-confirm>放弃</sp-button>
+    </div>
+  </sp-dialog>
+
   <section id="tokens">
     <h2>主题变量</h2>
     <p>全部以 <code>--sp-</code> 开头，覆盖任意一个即可。</p>
@@ -264,6 +311,9 @@ await light.enableTilt(); // 手机倾斜（iOS 需手势）</code></pre>
 <script type="module">
   import * as S from "./specular-ui.js";
   window.__specular = S;
+  document.getElementById("docDialogBtn").addEventListener("click", () => {
+    document.querySelector("sp-dialog").show();
+  });
 </script>
 </body>
 </html>
