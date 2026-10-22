@@ -1,0 +1,246 @@
+/* =============================================================================
+   specular-ui · design tokens
+   -----------------------------------------------------------------------------
+   The whole system hangs off one idea: every surface in the page is lit by the
+   SAME light. A single set of `--sp-light-*` variables is written once on the
+   root element (by the light controller) and every material reads from it.
+   Metal rotates its anisotropy band, glass aims its chromatic fringe, frost
+   picks up an edge line, holographic film shifts its spectrum — all from one
+   vector. Change the light, and the entire page re-reads as one physical scene.
+   ============================================================================= */
+
+:root {
+  /* ---- light vector -------------------------------------------------------
+     Normalised viewport coordinates, 0..1. Mutated at runtime by
+     SpecularLight; the defaults below are a soft key light from upper-left. */
+  --sp-lx: 0.32;
+  --sp-ly: 0.18;
+  --sp-lz: 1;
+  /* Derived by JS: angle from element centre toward the light, in degrees. */
+  --sp-angle: 135deg;
+  /* Derived by JS: signed offsets in the range -1..1, used for edge lines. */
+  --sp-lx-signed: -0.36;
+  --sp-ly-signed: -0.64;
+  /* Per-element pointer position for the moving specular lobe (0..1). */
+  --sp-mx: 0.5;
+  --sp-my: 0.5;
+  --sp-light-power: 1;
+
+  /* ---- geometry ---------------------------------------------------------- */
+  --sp-radius-xs: 6px;
+  --sp-radius-sm: 10px;
+  --sp-radius-md: 16px;
+  --sp-radius-lg: 26px;
+  --sp-radius-xl: 38px;
+  --sp-radius-pill: 999px;
+  --sp-hairline: 1px;
+
+  /* ---- typography -------------------------------------------------------- */
+  --sp-font-sans: "Inter", "SF Pro Text", "Segoe UI Variable", "Segoe UI",
+    system-ui, -apple-system, "Noto Sans SC", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  --sp-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", ui-monospace,
+    monospace;
+  --sp-fs-xs: 11px;
+  --sp-fs-sm: 12.5px;
+  --sp-fs-md: 14px;
+  --sp-fs-lg: 17px;
+  --sp-fs-xl: 23px;
+  --sp-tracking-tight: -0.014em;
+  --sp-tracking-wide: 0.08em;
+
+  /* ---- spacing ----------------------------------------------------------- */
+  --sp-space-1: 4px;
+  --sp-space-2: 8px;
+  --sp-space-3: 12px;
+  --sp-space-4: 16px;
+  --sp-space-5: 24px;
+  --sp-space-6: 32px;
+  --sp-space-7: 48px;
+
+  /* ---- motion ------------------------------------------------------------ */
+  --sp-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --sp-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --sp-dur-fast: 120ms;
+  --sp-dur-base: 240ms;
+  --sp-dur-slow: 620ms;
+
+  /* ---- depth ------------------------------------------------------------- */
+  --sp-shadow-1: 0 1px 2px rgb(0 0 0 / 0.14), 0 4px 14px -6px rgb(0 0 0 / 0.28);
+  --sp-shadow-2: 0 2px 6px rgb(0 0 0 / 0.18), 0 18px 44px -18px rgb(0 0 0 / 0.42);
+  --sp-shadow-3: 0 4px 10px rgb(0 0 0 / 0.22), 0 34px 80px -28px rgb(0 0 0 / 0.55);
+
+  /* ---- material knobs (shared defaults, overridden per material) --------- */
+  --sp-frost-blur: 18px;
+  --sp-frost-saturate: 165%;
+  --sp-refract-scale: 58;
+  --sp-aberration: 0.32;
+  --sp-tint-strength: 0.16;
+  --sp-noise-opacity: 0.34;
+  --sp-edge-width: 1px;
+  --sp-holo-saturation: 85%;
+  --sp-metal-brush: 3px;
+}
+
+/* ============================== AMBIENCE ====================================
+   An "ambience" is not a colour theme — it is an environment. It decides what
+   the light is made of, and therefore what the reflections look like.        */
+
+[data-sp-ambience="dusk"] {
+  --sp-ambient-key: #ffd9a0;
+  --sp-ambient-fill: #c98f5a;
+  --sp-ambient-shadow: #1a120c;
+  --sp-ambient-tint: #3a2a1e;
+  --sp-ambient-accent: #ffb257;
+  --sp-ambient-accent-ink: #2a1a0c;
+  --sp-page-1: #120e0b;
+  --sp-page-2: #1d1510;
+  --sp-page-3: #2a1e15;
+  --sp-ink-1: #f6ece0;
+  --sp-ink-2: #c4b2a0;
+  --sp-ink-3: #8d7b6b;
+  --sp-hairline-color: rgb(255 232 205 / 0.14);
+  --sp-glass-sheen: rgb(255 236 210 / 0.5);
+}
+
+[data-sp-ambience="studio"] {
+  --sp-ambient-key: #dfe9ff;
+  --sp-ambient-fill: #8ea2c4;
+  --sp-ambient-shadow: #0c1017;
+  --sp-ambient-tint: #1f2733;
+  --sp-ambient-accent: #7ea6ff;
+  --sp-ambient-accent-ink: #0a1020;
+  --sp-page-1: #0b0e13;
+  --sp-page-2: #141922;
+  --sp-page-3: #1e2531;
+  --sp-ink-1: #eef2f9;
+  --sp-ink-2: #a9b6c9;
+  --sp-ink-3: #6f7d92;
+  --sp-hairline-color: rgb(220 232 255 / 0.13);
+  --sp-glass-sheen: rgb(226 238 255 / 0.5);
+}
+
+[data-sp-ambience="neon"] {
+  --sp-ambient-key: #c8b6ff;
+  --sp-ambient-fill: #4f2f8f;
+  --sp-ambient-shadow: #08060f;
+  --sp-ambient-tint: #1a1030;
+  --sp-ambient-accent: #b48cff;
+  --sp-ambient-accent-ink: #0d0618;
+  --sp-page-1: #07040f;
+  --sp-page-2: #100a1e;
+  --sp-page-3: #1a1030;
+  --sp-ink-1: #f0e9ff;
+  --sp-ink-2: #b6a6d8;
+  --sp-ink-3: #7c6ba3;
+  --sp-hairline-color: rgb(214 196 255 / 0.16);
+  --sp-glass-sheen: rgb(232 222 255 / 0.5);
+}
+
+[data-sp-ambience="paper"] {
+  --sp-ambient-key: #fffdf8;
+  --sp-ambient-fill: #cfc4b0;
+  --sp-ambient-shadow: #6d6152;
+  --sp-ambient-tint: #f2ece1;
+  --sp-ambient-accent: #a8642c;
+  --sp-ambient-accent-ink: #fff8ee;
+  --sp-page-1: #efe9dd;
+  --sp-page-2: #e6ddcd;
+  --sp-page-3: #dbd0bd;
+  --sp-ink-1: #2a2118;
+  --sp-ink-2: #5d5142;
+  --sp-ink-3: #8c8071;
+  --sp-hairline-color: rgb(58 44 28 / 0.14);
+  --sp-glass-sheen: rgb(255 255 255 / 0.7);
+}
+
+/* Paper is a light environment: reduce edge darkness so hairline borders read */
+[data-sp-ambience="paper"] {
+  --sp-shadow-1: 0 1px 2px rgb(74 58 38 / 0.1), 0 6px 16px -8px rgb(74 58 38 / 0.22);
+  --sp-shadow-2: 0 2px 5px rgb(74 58 38 / 0.12), 0 20px 46px -20px rgb(74 58 38 / 0.3);
+  --sp-shadow-3: 0 3px 8px rgb(74 58 38 / 0.14), 0 36px 84px -30px rgb(74 58 38 / 0.34);
+}
+
+/* ============================ DENSITY / SCALE =============================== */
+[data-sp-density="compact"] {
+  --sp-fs-md: 13px;
+  --sp-space-4: 12px;
+  --sp-space-5: 18px;
+  --sp-radius-md: 12px;
+  --sp-radius-lg: 20px;
+}
+
+/* ============================== DEGRADATION =================================
+   `data-sp-tier` is set on <html> by the capability probe. Each tier removes
+   one layer of cost, in order of visual return per millisecond:
+     0 full     — refraction + frost + noise + holographic drift
+     1 balanced — refraction at half resolution, no noise, no drift
+     2 lite     — backdrop blur only, flat tint, no SVG filter
+     3 static   — opaque tint + hairline, zero compositing
+   Everything is a token change, so components never branch in JS.          */
+
+:root,
+[data-sp-tier="0"] {
+  --sp-tier-blur: 1;
+  --sp-tier-noise: 1;
+  --sp-tier-refract: 1;
+  --sp-tier-anim: 1;
+}
+
+[data-sp-tier="1"] {
+  --sp-tier-blur: 0.75;
+  --sp-tier-noise: 0;
+  --sp-tier-refract: 0.6;
+  --sp-tier-anim: 0.5;
+  --sp-noise-opacity: 0;
+}
+
+[data-sp-tier="2"] {
+  --sp-tier-blur: 1;
+  --sp-tier-noise: 0;
+  --sp-tier-refract: 0;
+  --sp-tier-anim: 0;
+  --sp-noise-opacity: 0;
+  --sp-frost-blur: 10px;
+}
+
+[data-sp-tier="3"] {
+  --sp-tier-blur: 0;
+  --sp-tier-noise: 0;
+  --sp-tier-refract: 0;
+  --sp-tier-anim: 0;
+  --sp-noise-opacity: 0;
+  --sp-frost-blur: 0px;
+  --sp-frost-saturate: 100%;
+  --sp-tint-strength: 0.82;
+}
+
+/* ============================== ACCESSIBILITY =============================== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sp-dur-fast: 0ms;
+    --sp-dur-base: 0ms;
+    --sp-dur-slow: 0ms;
+    --sp-tier-anim: 0;
+  }
+  [data-sp-ambience] {
+    --sp-holo-drift: 0deg;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --sp-tier-blur: 0;
+    --sp-tier-refract: 0;
+    --sp-tier-noise: 0;
+    --sp-tint-strength: 0.9;
+    --sp-frost-blur: 0px;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --sp-hairline-color: color-mix(in oklab, var(--sp-ink-1) 55%, transparent);
+    --sp-edge-width: 1.5px;
+  }
+}

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-CN" data-sp-ambience="paper">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Specular UI — 使用文档</title>
+<link rel="stylesheet" href="./specular-ui.css">
+<style>
+  :root { --doc-w: 940px; }
+  body {
+    margin: 0;
+    background: var(--sp-page-1);
+    color: var(--sp-ink-1);
+    font-family: var(--sp-font-sans);
+    font-size: 15px;
+    line-height: 1.72;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width: min(100% - 40px, var(--doc-w)); margin-inline: auto; }
+  header { padding: 56px 0 28px; border-bottom: 1px solid var(--sp-hairline-color); }
+  h1 { margin: 0 0 8px; font-size: clamp(30px, 4vw, 44px); font-weight: 620; letter-spacing: -0.02em; }
+  .lede { margin: 0; color: var(--sp-ink-2); max-width: 62ch; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  nav.toc a {
+    font-size: 12.5px; text-decoration: none; color: var(--sp-ink-2);
+    border: 1px solid var(--sp-hairline-color); padding: 5px 12px; border-radius: 999px;
+  }
+  nav.toc a:hover { color: var(--sp-ambient-accent); border-color: currentColor; }
+  section { padding: 40px 0; border-bottom: 1px solid var(--sp-hairline-color); }
+  h2 { margin: 0 0 16px; font-size: 21px; font-weight: 620; letter-spacing: -0.01em; }
+  h3 { margin: 26px 0 10px; font-size: 15px; font-weight: 640; color: var(--sp-ambient-accent); }
+  p { margin: 0 0 14px; color: var(--sp-ink-2); }
+  code {
+    font-family: var(--sp-font-mono); font-size: 0.9em;
+    background: color-mix(in oklab, var(--sp-ink-1) 8%, transparent);
+    padding: 1px 5px; border-radius: 5px; color: var(--sp-ink-1);
+  }
+  pre {
+    margin: 0 0 16px; padding: 16px 18px; overflow-x: auto;
+    background: color-mix(in oklab, var(--sp-ink-1) 6%, transparent);
+    border: 1px solid var(--sp-hairline-color);
+    border-radius: var(--sp-radius-md);
+    font-family: var(--sp-font-mono); font-size: 12.5px; line-height: 1.66;
+    color: var(--sp-ink-1);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--sp-hairline-color); vertical-align: top; }
+  th { color: var(--sp-ink-3); font-weight: 600; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+  td code { white-space: nowrap; }
+  .note {
+    border-left: 2px solid var(--sp-ambient-accent);
+    padding: 2px 0 2px 14px; margin: 0 0 16px;
+    color: var(--sp-ink-2); font-size: 13.5px;
+  }
+  .demo-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; align-items: center; }
+  footer { padding: 34px 0 60px; color: var(--sp-ink-3); font-size: 13px; }
+  footer a { color: var(--sp-ink-2); }
+  [data-material="liquid"] .sp-surface { --sp-frost-blur: 11px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>使用文档</h1>
+    <p class="lede">两个文件，四行 HTML。组件是原生自定义元素，主题是 CSS 变量，光源是整个文档共享的一条向量。</p>
+    <nav class="toc">
+      <a href="#install">安装</a>
+      <a href="#init">初始化</a>
+      <a href="#button">按钮</a>
+      <a href="#card">卡片</a>
+      <a href="#panel">面板</a>
+      <a href="#navbar">导航</a>
+      <a href="#tokens">主题变量</a>
+      <a href="#light">光照</a>
+      <a href="#tiers">降级</a>
+      <a href="#mobile">移动端</a>
+      <a href="#a11y">无障碍</a>
+      <a href="#faq">常见问题</a>
+    </nav>
+  </header>
+
+  <section id="install">
+    <h2>安装</h2>
+<pre><code>&lt;link rel="stylesheet" href="specular-ui.css"&gt;
+&lt;script type="module" src="specular-ui.js"&gt;&lt;/script&gt;</code></pre>
+    <p>两个文件，不需要构建步骤、不需要 peer dependency。<code>dist/</code> 里的产物可直接放到静态服务器。</p>
+    <table>
+      <tr><th>文件</th><th>原始</th><th>gzip</th></tr>
+      <tr><td><code>specular-ui.js</code></td><td>43.8 KB</td><td>12.2 KB</td></tr>
+      <tr><td><code>specular-ui.css</code></td><td>24.6 KB</td><td>5.1 KB</td></tr>
+    </table>
+  </section>
+
+  <section id="init">
+    <h2>初始化</h2>
+    <p>导入即初始化：探测能力、设定档位、接管光源。要延后启动，在 <code>&lt;html&gt;</code> 上加 <code>data-sp-auto="false"</code> 后手动调用：</p>
+<pre><code>import { init, diagnostics } from "specular-ui";
+
+const { tier, tierLabel, reasons } = init({ tier: 0, tilt: false });
+console.table(diagnostics());</code></pre>
+    <h3>环境</h3>
+    <p><code>data-sp-ambience</code> 决定光由什么构成，因此决定反射长什么样：</p>
+    <div class="demo-row">
+      <sp-button size="sm" material="liquid" onclick="__specular.setAmbience('dusk')">黄昏</sp-button>
+      <sp-button size="sm" material="liquid" onclick="__specular.setAmbience('studio')">影棚</sp-button>
+      <sp-button size="sm" material="liquid" onclick="__specular.setAmbience('neon')">霓虹</sp-button>
+      <sp-button size="sm" material="liquid" onclick="__specular.setAmbience('paper')">纸本</sp-button>
+    </div>
+<pre><code>import { setAmbience } from "specular-ui";
+setAmbience("studio");</code></pre>
+  </section>
+
+  <section id="button">
+    <h2>&lt;sp-button&gt;</h2>
+    <p>内部是真实的 <code>&lt;button&gt;</code>，所以在 <code>&lt;form&gt;</code> 内会正常提交，键盘、焦点顺序全部由平台提供。</p>
+    <div class="demo-row">
+      <sp-button material="liquid" variant="primary">主要</sp-button>
+      <sp-button material="liquid" variant="outline">描边</sp-button>
+      <sp-button material="liquid" variant="ghost">幽灵</sp-button>
+      <sp-button material="liquid" variant="danger">危险</sp-button>
+      <sp-button material="liquid" disabled>禁用</sp-button>
+      <sp-button material="liquid" loading>载入</sp-button>
+    </div>
+<pre><code>&lt;sp-button material="liquid" variant="primary" size="lg"&gt;开始&lt;/sp-button&gt;
+&lt;sp-button type="submit" form="save-form" loading&gt;提交中&lt;/sp-button&gt;</code></pre>
+    <table>
+      <tr><th>属性</th><th>取值</th><th>说明</th></tr>
+      <tr><td><code>material</code></td><td>liquid / metal / frost / holo</td><td>表面材质</td></tr>
+      <tr><td><code>variant</code></td><td>primary / outline / ghost / danger</td><td>语义变体</td></tr>
+      <tr><td><code>size</code></td><td>sm / md / lg / xl</td><td>尺寸</td></tr>
+      <tr><td><code>disabled</code> <code>loading</code></td><td>布尔</td><td>同时同步 aria 状态</td></tr>
+      <tr><td><code>type</code> <code>form</code> <code>label</code></td><td>字符串</td><td>转发给内部按钮</td></tr>
+    </table>
+    <p class="note">不要在已挂载的组件上写 <code>textContent</code>，那会替换掉内部结构。请改插槽里的元素。</p>
+  </section>
+
+  <section id="card">
+    <h2>&lt;sp-card&gt;</h2>
+    <div class="demo-row" style="align-items:stretch">
+      <sp-card material="metal" eyebrow="METAL" heading="拉丝金属" style="width:280px">
+        <p style="margin:0">各向异性带随光源旋转。</p>
+        <div data-slot="footer"><sp-button size="sm">查看</sp-button></div>
+      </sp-card>
+      <sp-card material="holo" eyebrow="HOLO" heading="全息膜" interactive style="width:280px">
+        <p style="margin:0">可交互：Enter / Space 触发。</p>
+      </sp-card>
+    </div>
+<pre><code>&lt;sp-card material="frost" eyebrow="MATERIAL" heading="磨砂玻璃" interactive&gt;
+  &lt;p&gt;正文&lt;/p&gt;
+  &lt;div data-slot="footer"&gt;&lt;sp-button size="sm"&gt;查看&lt;/sp-button&gt;&lt;/div&gt;
+&lt;/sp-card&gt;</code></pre>
+  </section>
+
+  <section id="panel">
+    <h2>&lt;sp-panel&gt;</h2>
+    <sp-panel material="liquid" heading="折叠面板，标题是真实按钮">
+      <p style="margin:0">带 <code>aria-expanded</code> 与 <code>aria-controls</code>，可 Tab 聚焦。</p>
+    </sp-panel>
+<pre><code>&lt;sp-panel material="liquid" heading="标题"&gt;正文&lt;/sp-panel&gt;
+&lt;sp-panel collapsed="true" collapsible="false"&gt;纯容器&lt;/sp-panel&gt;</code></pre>
+    <p>状态变化时派发 <code>panel-toggle</code>，<code>detail.collapsed</code> 为当前值。</p>
+  </section>
+
+  <section id="navbar">
+    <h2>&lt;sp-navbar&gt;</h2>
+    <sp-navbar brand="示例" material="frost">
+      <a class="sp-nav-link" href="#navbar" aria-current="page">当前项</a>
+      <a class="sp-nav-link" href="#navbar">另一项</a>
+      <div data-slot="actions"><sp-button size="sm">操作</sp-button></div>
+    </sp-navbar>
+<pre><code>&lt;sp-navbar brand="Specular" material="frost" compact="hide-actions"&gt;
+  &lt;a class="sp-nav-link" href="#a" aria-current="page"&gt;材质&lt;/a&gt;
+  &lt;div data-slot="actions"&gt;&lt;sp-button size="sm"&gt;登录&lt;/sp-button&gt;&lt;/div&gt;
+&lt;/sp-navbar&gt;</code></pre>
+    <p>滚动超过 8px 自动加 <code>data-scrolled="true"</code>，可用它加深阴影。</p>
+  </section>
+
+  <section id="tokens">
+    <h2>主题变量</h2>
+    <p>全部以 <code>--sp-</code> 开头，覆盖任意一个即可。</p>
+    <table>
+      <tr><th>变量</th><th>默认</th><th>作用</th></tr>
+      <tr><td><code>--sp-lx</code> <code>--sp-ly</code></td><td>0.32 / 0.18</td><td>光源位置（JS 写入）</td></tr>
+      <tr><td><code>--sp-angle</code></td><td>135deg</td><td>方位角，conic-gradient 直接用</td></tr>
+      <tr><td><code>--sp-frost-blur</code></td><td>18px</td><td>主体模糊半径</td></tr>
+      <tr><td><code>--sp-aberration</code></td><td>0.55</td><td>色边强度，0 关闭</td></tr>
+      <tr><td><code>--sp-tint-strength</code></td><td>0.16</td><td>环境色浸染</td></tr>
+      <tr><td><code>--sp-noise-opacity</code></td><td>0.34</td><td>磨砂颗粒</td></tr>
+      <tr><td><code>--sp-holo-saturation</code></td><td>85%</td><td>全息色谱饱和度</td></tr>
+      <tr><td><code>--sp-metal-brush</code></td><td>3px</td><td>拉丝间距</td></tr>
+    </table>
+<pre><code>/* 更冷、更薄、更锐利 */
+[data-material="liquid"] {
+  --sp-frost-blur: 8px;
+  --sp-tint-strength: 0.08;
+  --sp-aberration: 0.3;
+}</code></pre>
+  </section>
+
+  <section id="light">
+    <h2>光照</h2>
+    <p>指针即光源；静止 2.6 秒后开始缓慢漂移。</p>
+<pre><code>import { light } from "specular-ui";
+
+light.set(0.2, 0.8);      // 手动定位
+light.lock(true);         // 冻结
+light.detach();           // 停止
+await light.enableTilt(); // 手机倾斜（iOS 需手势）</code></pre>
+    <p>任何带 <code>data-sp-lobe</code> 的元素都会获得指针在自身内部的位置：</p>
+<pre><code>&lt;div data-sp-lobe class="panel"&gt;…&lt;/div&gt;
+
+.panel::after {
+  background: radial-gradient(120% 90% at var(--sp-mx) var(--sp-my), #fff3, transparent 60%);
+}</code></pre>
+  </section>
+
+  <section id="tiers">
+    <h2>降级</h2>
+    <table>
+      <tr><th>档位</th><th>data-sp-tier</th><th>保留</th></tr>
+      <tr><td>full</td><td>0</td><td>全部</td></tr>
+      <tr><td>balanced</td><td>1</td><td>半强度模糊、弱色边，关闭噪点与漂移</td></tr>
+      <tr><td>lite</td><td>2</td><td>仅一层背景模糊</td></tr>
+      <tr><td>static</td><td>3</td><td>纯色板 + 发丝边，零合成</td></tr>
+    </table>
+    <div class="demo-row">
+      <sp-button size="sm" onclick="__specular.setTier(0)">full</sp-button>
+      <sp-button size="sm" onclick="__specular.setTier(1)">balanced</sp-button>
+      <sp-button size="sm" onclick="__specular.setTier(2)">lite</sp-button>
+      <sp-button size="sm" onclick="__specular.setTier(3)">static</sp-button>
+    </div>
+    <p><code>prefers-reduced-transparency</code>、<code>prefers-reduced-motion</code>、粗指针、低内存设备各自映射到一个档位，无需手动处理。</p>
+  </section>
+
+  <section id="mobile">
+    <h2>移动端</h2>
+    <p>已内置，无需配置：粗指针下所有交互元素 ≥ 44×44；720px 以下导航收起品牌文字；560px 以下内边距收紧；<code>prefers-reduced-transparency</code> 直接跳 light 档。</p>
+    <p>倾斜控制需要用户手势授权，因此永不自动启用。</p>
+  </section>
+
+  <section id="a11y">
+    <h2>无障碍</h2>
+    <p>每个组件内部都是语义正确的原生元素；焦点环用 <code>outline</code> 且带 <code>offset</code>；<code>disabled</code> / <code>loading</code> 同步 <code>aria-disabled</code> / <code>aria-busy</code>；面板标题带 <code>aria-expanded</code>。高对比模式下发丝边加粗。</p>
+  </section>
+
+  <section id="faq">
+    <h2>常见问题</h2>
+    <h3>为什么玻璃没有"扭曲"背景？</h3>
+    <p>浏览器不会把 <code>backdrop-filter</code> 的结果送进 <code>filter: url(#…)</code>，所以基于位移贴图的几何折射对玻璃表面无效。本库用"边缘梯度模糊 + 色散"营造厚度。详见仓库 <code>docs/LIMITS.md</code>。</p>
+    <h3>React / Vue 能用吗？</h3>
+    <p>能，自定义元素与框架无关。React 19 以下对自定义元素属性支持有限，复杂属性用 <code>ref</code> 设置。</p>
+    <h3>SSR 会报错吗？</h3>
+    <p>不会。所有 DOM 访问都在环境检测之后。</p>
+  </section>
+
+  <footer>
+    MIT · <a href="./index.html">返回演示</a> ·
+    <a href="https://github.com/llinok111/specular-ui">源码</a> ·
+    <a href="./NOTICE.txt">许可与归属</a>
+  </footer>
+</div>
+<script type="module">
+  import * as S from "./specular-ui.js";
+  window.__specular = S;
+</script>
+</body>
+</html>

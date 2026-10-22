@@ -1,0 +1,893 @@
+/* src/styles/tokens.css */
+:root {
+  --sp-lx: 0.32;
+  --sp-ly: 0.18;
+  --sp-lz: 1;
+  --sp-angle: 135deg;
+  --sp-lx-signed: -0.36;
+  --sp-ly-signed: -0.64;
+  --sp-mx: 0.5;
+  --sp-my: 0.5;
+  --sp-light-power: 1;
+  --sp-radius-xs: 6px;
+  --sp-radius-sm: 10px;
+  --sp-radius-md: 16px;
+  --sp-radius-lg: 26px;
+  --sp-radius-xl: 38px;
+  --sp-radius-pill: 999px;
+  --sp-hairline: 1px;
+  --sp-font-sans:
+    "Inter",
+    "SF Pro Text",
+    "Segoe UI Variable",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    "Noto Sans SC",
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
+  --sp-font-mono:
+    "JetBrains Mono",
+    "SF Mono",
+    "Cascadia Code",
+    ui-monospace,
+    monospace;
+  --sp-fs-xs: 11px;
+  --sp-fs-sm: 12.5px;
+  --sp-fs-md: 14px;
+  --sp-fs-lg: 17px;
+  --sp-fs-xl: 23px;
+  --sp-tracking-tight: -0.014em;
+  --sp-tracking-wide: 0.08em;
+  --sp-space-1: 4px;
+  --sp-space-2: 8px;
+  --sp-space-3: 12px;
+  --sp-space-4: 16px;
+  --sp-space-5: 24px;
+  --sp-space-6: 32px;
+  --sp-space-7: 48px;
+  --sp-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --sp-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --sp-dur-fast: 120ms;
+  --sp-dur-base: 240ms;
+  --sp-dur-slow: 620ms;
+  --sp-shadow-1: 0 1px 2px rgb(0 0 0 / 0.14), 0 4px 14px -6px rgb(0 0 0 / 0.28);
+  --sp-shadow-2: 0 2px 6px rgb(0 0 0 / 0.18), 0 18px 44px -18px rgb(0 0 0 / 0.42);
+  --sp-shadow-3: 0 4px 10px rgb(0 0 0 / 0.22), 0 34px 80px -28px rgb(0 0 0 / 0.55);
+  --sp-frost-blur: 18px;
+  --sp-frost-saturate: 165%;
+  --sp-refract-scale: 58;
+  --sp-aberration: 0.32;
+  --sp-tint-strength: 0.16;
+  --sp-noise-opacity: 0.34;
+  --sp-edge-width: 1px;
+  --sp-holo-saturation: 85%;
+  --sp-metal-brush: 3px;
+}
+[data-sp-ambience=dusk] {
+  --sp-ambient-key: #ffd9a0;
+  --sp-ambient-fill: #c98f5a;
+  --sp-ambient-shadow: #1a120c;
+  --sp-ambient-tint: #3a2a1e;
+  --sp-ambient-accent: #ffb257;
+  --sp-ambient-accent-ink: #2a1a0c;
+  --sp-page-1: #120e0b;
+  --sp-page-2: #1d1510;
+  --sp-page-3: #2a1e15;
+  --sp-ink-1: #f6ece0;
+  --sp-ink-2: #c4b2a0;
+  --sp-ink-3: #8d7b6b;
+  --sp-hairline-color: rgb(255 232 205 / 0.14);
+  --sp-glass-sheen: rgb(255 236 210 / 0.5);
+}
+[data-sp-ambience=studio] {
+  --sp-ambient-key: #dfe9ff;
+  --sp-ambient-fill: #8ea2c4;
+  --sp-ambient-shadow: #0c1017;
+  --sp-ambient-tint: #1f2733;
+  --sp-ambient-accent: #7ea6ff;
+  --sp-ambient-accent-ink: #0a1020;
+  --sp-page-1: #0b0e13;
+  --sp-page-2: #141922;
+  --sp-page-3: #1e2531;
+  --sp-ink-1: #eef2f9;
+  --sp-ink-2: #a9b6c9;
+  --sp-ink-3: #6f7d92;
+  --sp-hairline-color: rgb(220 232 255 / 0.13);
+  --sp-glass-sheen: rgb(226 238 255 / 0.5);
+}
+[data-sp-ambience=neon] {
+  --sp-ambient-key: #c8b6ff;
+  --sp-ambient-fill: #4f2f8f;
+  --sp-ambient-shadow: #08060f;
+  --sp-ambient-tint: #1a1030;
+  --sp-ambient-accent: #b48cff;
+  --sp-ambient-accent-ink: #0d0618;
+  --sp-page-1: #07040f;
+  --sp-page-2: #100a1e;
+  --sp-page-3: #1a1030;
+  --sp-ink-1: #f0e9ff;
+  --sp-ink-2: #b6a6d8;
+  --sp-ink-3: #7c6ba3;
+  --sp-hairline-color: rgb(214 196 255 / 0.16);
+  --sp-glass-sheen: rgb(232 222 255 / 0.5);
+}
+[data-sp-ambience=paper] {
+  --sp-ambient-key: #fffdf8;
+  --sp-ambient-fill: #cfc4b0;
+  --sp-ambient-shadow: #6d6152;
+  --sp-ambient-tint: #f2ece1;
+  --sp-ambient-accent: #a8642c;
+  --sp-ambient-accent-ink: #fff8ee;
+  --sp-page-1: #efe9dd;
+  --sp-page-2: #e6ddcd;
+  --sp-page-3: #dbd0bd;
+  --sp-ink-1: #2a2118;
+  --sp-ink-2: #5d5142;
+  --sp-ink-3: #8c8071;
+  --sp-hairline-color: rgb(58 44 28 / 0.14);
+  --sp-glass-sheen: rgb(255 255 255 / 0.7);
+}
+[data-sp-ambience=paper] {
+  --sp-shadow-1: 0 1px 2px rgb(74 58 38 / 0.1), 0 6px 16px -8px rgb(74 58 38 / 0.22);
+  --sp-shadow-2: 0 2px 5px rgb(74 58 38 / 0.12), 0 20px 46px -20px rgb(74 58 38 / 0.3);
+  --sp-shadow-3: 0 3px 8px rgb(74 58 38 / 0.14), 0 36px 84px -30px rgb(74 58 38 / 0.34);
+}
+[data-sp-density=compact] {
+  --sp-fs-md: 13px;
+  --sp-space-4: 12px;
+  --sp-space-5: 18px;
+  --sp-radius-md: 12px;
+  --sp-radius-lg: 20px;
+}
+:root,
+[data-sp-tier="0"] {
+  --sp-tier-blur: 1;
+  --sp-tier-noise: 1;
+  --sp-tier-refract: 1;
+  --sp-tier-anim: 1;
+}
+[data-sp-tier="1"] {
+  --sp-tier-blur: 0.75;
+  --sp-tier-noise: 0;
+  --sp-tier-refract: 0.6;
+  --sp-tier-anim: 0.5;
+  --sp-noise-opacity: 0;
+}
+[data-sp-tier="2"] {
+  --sp-tier-blur: 1;
+  --sp-tier-noise: 0;
+  --sp-tier-refract: 0;
+  --sp-tier-anim: 0;
+  --sp-noise-opacity: 0;
+  --sp-frost-blur: 10px;
+}
+[data-sp-tier="3"] {
+  --sp-tier-blur: 0;
+  --sp-tier-noise: 0;
+  --sp-tier-refract: 0;
+  --sp-tier-anim: 0;
+  --sp-noise-opacity: 0;
+  --sp-frost-blur: 0px;
+  --sp-frost-saturate: 100%;
+  --sp-tint-strength: 0.82;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sp-dur-fast: 0ms;
+    --sp-dur-base: 0ms;
+    --sp-dur-slow: 0ms;
+    --sp-tier-anim: 0;
+  }
+  [data-sp-ambience] {
+    --sp-holo-drift: 0deg;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --sp-tier-blur: 0;
+    --sp-tier-refract: 0;
+    --sp-tier-noise: 0;
+    --sp-tint-strength: 0.9;
+    --sp-frost-blur: 0px;
+  }
+}
+@media (prefers-contrast: more) {
+  :root {
+    --sp-hairline-color: color-mix(in oklab, var(--sp-ink-1) 55%, transparent);
+    --sp-edge-width: 1.5px;
+  }
+}
+
+/* src/styles/materials.css */
+.sp-surface,
+.sp-sheen,
+.sp-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.sp-surface {
+  overflow: hidden;
+  backdrop-filter: blur(calc(var(--sp-frost-blur) * var(--sp-tier-blur))) saturate(var(--sp-frost-saturate));
+  -webkit-backdrop-filter: blur(calc(var(--sp-frost-blur) * var(--sp-tier-blur))) saturate(var(--sp-frost-saturate));
+  transition: backdrop-filter var(--sp-dur-base) var(--sp-ease-out);
+}
+.sp-surface > * {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+[data-material=liquid] .sp-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  backdrop-filter: blur(calc(34px * var(--sp-tier-blur))) saturate(138%);
+  -webkit-backdrop-filter: blur(calc(34px * var(--sp-tier-blur))) saturate(138%);
+  mask-image:
+    radial-gradient(
+      closest-side,
+      transparent 46%,
+      #000 96%);
+  -webkit-mask-image:
+    radial-gradient(
+      closest-side,
+      transparent 46%,
+      #000 96%);
+  opacity: calc(1 - var(--sp-tier-refract));
+  opacity: clamp(0, calc(var(--sp-tier-blur) * 1), 1);
+  transition: backdrop-filter var(--sp-dur-base) var(--sp-ease-out);
+}
+[data-material=liquid] .sp-surface {
+  --sp-frost-blur: 13px;
+  background:
+    linear-gradient(
+      168deg,
+      color-mix(in oklab, var(--sp-glass-sheen) 26%, transparent) 0%,
+      transparent 34%,
+      transparent 66%,
+      color-mix(in oklab, var(--sp-ambient-fill) 18%, transparent) 100%);
+  box-shadow:
+    inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-glass-sheen) 30%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--sp-glass-sheen) calc(52% * var(--sp-tier-blur)), transparent),
+    inset 0 -14px 30px -22px color-mix(in oklab, var(--sp-ambient-shadow) 85%, transparent);
+}
+[data-material=liquid] .sp-tint {
+  background: color-mix(in oklab, var(--sp-ambient-tint) calc(var(--sp-tint-strength) * 100%), transparent);
+  mix-blend-mode: soft-light;
+}
+[data-material=liquid] .sp-chroma {
+  background:
+    conic-gradient(
+      from var(--sp-angle),
+      transparent 0deg,
+      color-mix(in oklab, var(--sp-ambient-key) 30%, transparent) 34deg,
+      transparent 78deg,
+      color-mix(in oklab, var(--sp-ambient-accent) 24%, transparent) 156deg,
+      transparent 208deg,
+      color-mix(in oklab, var(--sp-ambient-fill) 28%, transparent) 296deg,
+      transparent 344deg);
+  box-shadow: inset calc(var(--sp-lx-signed) * 2.2px) calc(var(--sp-ly-signed) * 2.2px) 0 -0.5px rgb(255 96 72 / calc(0.34 * var(--sp-aberration) * var(--sp-tier-refract))), inset calc(var(--sp-lx-signed) * -2.2px) calc(var(--sp-ly-signed) * -2.2px) 0 -0.5px rgb(72 148 255 / calc(0.34 * var(--sp-aberration) * var(--sp-tier-refract)));
+  opacity: calc(0.55 * var(--sp-tier-refract) + 0.2 * var(--sp-aberration));
+  mix-blend-mode: screen;
+  mask-image:
+    radial-gradient(
+      closest-side,
+      transparent 58%,
+      #000 100%);
+  -webkit-mask-image:
+    radial-gradient(
+      closest-side,
+      transparent 58%,
+      #000 100%);
+}
+[data-material=metal] .sp-surface {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background:
+    linear-gradient(
+      176deg,
+      color-mix(in oklab, var(--sp-ambient-key) 74%, var(--sp-ambient-tint)) 0%,
+      color-mix(in oklab, var(--sp-ambient-fill) 58%, var(--sp-ambient-tint)) 26%,
+      color-mix(in oklab, var(--sp-ambient-shadow) 62%, var(--sp-ambient-tint)) 54%,
+      color-mix(in oklab, var(--sp-ambient-fill) 46%, var(--sp-ambient-tint)) 78%,
+      color-mix(in oklab, var(--sp-ambient-key) 66%, var(--sp-ambient-tint)) 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--sp-ambient-key) 62%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--sp-ambient-shadow) 70%, transparent),
+    inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-ambient-key) 18%, transparent);
+}
+[data-material=metal] .sp-aniso {
+  background:
+    conic-gradient(
+      from var(--sp-angle),
+      transparent 0%,
+      color-mix(in oklab, var(--sp-ambient-key) 62%, transparent) 12%,
+      transparent 24%,
+      color-mix(in oklab, var(--sp-ambient-shadow) 58%, transparent) 42%,
+      transparent 54%,
+      color-mix(in oklab, var(--sp-ambient-key) 44%, transparent) 74%,
+      transparent 88%);
+  mix-blend-mode: overlay;
+  opacity: calc(0.85 * var(--sp-light-power));
+}
+[data-material=metal] .sp-grain {
+  background-image:
+    repeating-linear-gradient(
+      92deg,
+      rgb(255 255 255 / 0.055) 0,
+      rgb(255 255 255 / 0.055) 1px,
+      transparent 1px,
+      rgb(0 0 0 / 0.045) var(--sp-metal-brush),
+      transparent calc(var(--sp-metal-brush) + 1px));
+  mix-blend-mode: overlay;
+}
+[data-material=frost] .sp-surface {
+  --sp-frost-blur: 30px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--sp-glass-sheen) 12%, transparent),
+      transparent 46%);
+  box-shadow: inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-glass-sheen) 22%, transparent), inset 0 1px 0 color-mix(in oklab, var(--sp-glass-sheen) 40%, transparent);
+}
+[data-material=frost] .sp-tint {
+  background: color-mix(in oklab, var(--sp-ambient-tint) calc(var(--sp-tint-strength) * 140%), transparent);
+  mix-blend-mode: multiply;
+  opacity: 0.8;
+}
+[data-material=frost] .sp-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: calc(var(--sp-noise-opacity) * 0.5 * var(--sp-tier-noise));
+  mix-blend-mode: overlay;
+}
+@property --sp-holo-hue { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+[data-material=holo] .sp-surface {
+  backdrop-filter: blur(calc(10px * var(--sp-tier-blur))) saturate(140%);
+  -webkit-backdrop-filter: blur(calc(10px * var(--sp-tier-blur))) saturate(140%);
+  background: color-mix(in oklab, var(--sp-ambient-shadow) 82%, var(--sp-ambient-tint));
+  box-shadow: inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-ambient-key) 26%, transparent), inset 0 1px 0 color-mix(in oklab, var(--sp-ambient-key) 40%, transparent);
+}
+[data-material=holo] .sp-film {
+  background:
+    conic-gradient(
+      from calc(var(--sp-angle) + var(--sp-holo-hue)),
+      hsl(280 var(--sp-holo-saturation) 62%),
+      hsl(196 var(--sp-holo-saturation) 62%),
+      hsl(150 var(--sp-holo-saturation) 58%),
+      hsl(48 var(--sp-holo-saturation) 62%),
+      hsl(8 var(--sp-holo-saturation) 62%),
+      hsl(320 var(--sp-holo-saturation) 62%),
+      hsl(280 var(--sp-holo-saturation) 62%));
+  mix-blend-mode: color-dodge;
+  opacity: calc(0.4 * var(--sp-tier-anim, 1) + 0.12);
+  animation: sp-holo-drift 14s linear infinite;
+  animation-play-state: var(--sp-holo-play, running);
+  mask-image:
+    radial-gradient(
+      120% 90% at calc(var(--sp-mx) * 100%) calc(var(--sp-my) * 100%),
+      #000 0%,
+      rgb(0 0 0 / 0.55) 58%,
+      transparent 92%);
+  -webkit-mask-image:
+    radial-gradient(
+      120% 90% at calc(var(--sp-mx) * 100%) calc(var(--sp-my) * 100%),
+      #000 0%,
+      rgb(0 0 0 / 0.55) 58%,
+      transparent 92%);
+}
+[data-material=holo] .sp-tint {
+  background:
+    linear-gradient(
+      118deg,
+      color-mix(in oklab, var(--sp-ambient-accent) 22%, transparent),
+      transparent 42%,
+      color-mix(in oklab, var(--sp-ambient-key) 18%, transparent));
+  mix-blend-mode: soft-light;
+}
+@keyframes sp-holo-drift {
+  to {
+    --sp-holo-hue: 360deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-material=holo] .sp-film {
+    animation: none;
+  }
+}
+.sp-sheen {
+  background:
+    radial-gradient(
+      130% 100% at var(--sp-mx) var(--sp-my),
+      color-mix(in oklab, var(--sp-ambient-key) 30%, transparent) 0%,
+      transparent 46%),
+    linear-gradient(
+      var(--sp-angle),
+      color-mix(in oklab, var(--sp-ambient-key) 14%, transparent) 0%,
+      transparent 34%);
+  opacity: calc(0.55 * var(--sp-light-power));
+  mix-blend-mode: screen;
+  transition: opacity var(--sp-dur-base) var(--sp-ease-out);
+  z-index: 2;
+}
+.sp-edge {
+  box-shadow: inset 0 0 0 var(--sp-edge-width) var(--sp-hairline-color), inset calc(var(--sp-lx-signed) * 1px) calc(var(--sp-ly-signed) * 1px) 0 -0.5px color-mix(in oklab, var(--sp-ambient-key) 34%, transparent);
+  z-index: 3;
+}
+[data-sp-tier="3"] .sp-surface {
+  background: color-mix(in oklab, var(--sp-ambient-tint) 88%, var(--sp-page-2));
+  box-shadow: inset 0 0 0 var(--sp-edge-width) var(--sp-hairline-color);
+}
+[data-sp-tier="3"] .sp-sheen,
+[data-sp-tier="3"] .sp-film,
+[data-sp-tier="3"] .sp-aniso,
+[data-sp-tier="3"] .sp-chroma,
+[data-sp-tier="3"] .sp-grain {
+  display: none;
+}
+
+/* src/styles/elements.css */
+.sp-el {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-space-2);
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--sp-space-3) var(--sp-space-5);
+  border: 0;
+  border-radius: var(--sp-radius-md);
+  background: none;
+  color: var(--sp-ink-1);
+  font-family: var(--sp-font-sans);
+  font-size: var(--sp-fs-md);
+  font-weight: 520;
+  line-height: 1.35;
+  letter-spacing: var(--sp-tracking-tight);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--sp-dur-base) var(--sp-ease-out),
+    box-shadow var(--sp-dur-base) var(--sp-ease-out),
+    filter var(--sp-dur-fast) var(--sp-ease-out);
+  outline: none;
+}
+.sp-el:focus-visible {
+  outline: 2px solid var(--sp-ambient-accent);
+  outline-offset: 3px;
+}
+.sp-content {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+  pointer-events: none;
+}
+.sp-content > * {
+  pointer-events: auto;
+}
+.sp-el[data-size=sm] {
+  padding: var(--sp-space-2) var(--sp-space-4);
+  border-radius: var(--sp-radius-sm);
+  font-size: var(--sp-fs-sm);
+}
+.sp-el[data-size=lg] {
+  padding: var(--sp-space-4) var(--sp-space-6);
+  border-radius: var(--sp-radius-lg);
+  font-size: var(--sp-fs-lg);
+}
+.sp-el[data-size=xl] {
+  padding: 20px var(--sp-space-7);
+  border-radius: var(--sp-radius-xl);
+  font-size: var(--sp-fs-xl);
+  font-weight: 560;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sp-el:hover:not([disabled]):not([aria-disabled=true]) {
+    --sp-light-power: 1.28;
+    --sp-press: 1.012;
+  }
+  .sp-el:hover .sp-surface {
+    box-shadow:
+      inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-glass-sheen) 44%, transparent),
+      inset 0 1px 0 color-mix(in oklab, var(--sp-glass-sheen) 60%, transparent),
+      var(--sp-shadow-2);
+  }
+}
+.sp-el:active:not([disabled]):not([aria-disabled=true]) {
+  --sp-press: 0.972;
+  --sp-light-power: 1.4;
+  transition-duration: var(--sp-dur-fast);
+}
+.sp-el[disabled],
+.sp-el[aria-disabled=true] {
+  cursor: not-allowed;
+  opacity: 0.44;
+  filter: grayscale(0.55);
+  pointer-events: none;
+}
+.sp-el[data-loading=true] {
+  cursor: progress;
+  pointer-events: none;
+}
+.sp-el[data-loading=true] .sp-content {
+  opacity: 0;
+}
+.sp-el[data-loading=true]::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklab, var(--sp-ink-1) 28%, transparent);
+  border-top-color: var(--sp-ink-1);
+  animation: sp-spin 720ms linear infinite;
+}
+@keyframes sp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.sp-el[data-variant=primary] {
+  color: var(--sp-ambient-accent-ink);
+  font-weight: 600;
+}
+.sp-el[data-variant=primary] .sp-surface {
+  background:
+    linear-gradient(
+      168deg,
+      color-mix(in oklab, var(--sp-ambient-accent) 92%, white) 0%,
+      var(--sp-ambient-accent) 42%,
+      color-mix(in oklab, var(--sp-ambient-accent) 82%, var(--sp-ambient-shadow)) 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 46%, transparent),
+    inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-ambient-accent) 62%, transparent),
+    var(--sp-shadow-1);
+}
+.sp-el[data-variant=primary] .sp-chroma,
+.sp-el[data-variant=primary] .sp-film {
+  opacity: 0.16;
+}
+.sp-el[data-variant=primary] .sp-tint {
+  background: none;
+}
+.sp-el[data-variant=ghost] .sp-surface {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: transparent;
+  box-shadow: inset 0 0 0 var(--sp-edge-width) transparent;
+}
+.sp-el[data-variant=ghost]:hover .sp-surface {
+  background: color-mix(in oklab, var(--sp-ink-1) 7%, transparent);
+  box-shadow: inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-ink-1) 14%, transparent);
+}
+.sp-el[data-variant=ghost] .sp-sheen,
+.sp-el[data-variant=ghost] .sp-grain,
+.sp-el[data-variant=ghost] .sp-aniso,
+.sp-el[data-variant=ghost] .sp-chroma,
+.sp-el[data-variant=ghost] .sp-film {
+  display: none;
+}
+.sp-el[data-variant=outline] .sp-surface {
+  background: transparent;
+  box-shadow: inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-ink-1) 26%, transparent);
+}
+.sp-el[data-variant=outline]:hover .sp-surface {
+  box-shadow: inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-ink-1) 46%, transparent);
+}
+.sp-el[data-variant=danger] {
+  color: #fff;
+}
+.sp-el[data-variant=danger] .sp-surface {
+  background:
+    linear-gradient(
+      170deg,
+      #f0605a,
+      #c22f34 62%,
+      #8f1f27);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.32), var(--sp-shadow-1);
+}
+sp-card {
+  display: block;
+  position: relative;
+  border-radius: var(--sp-radius-lg);
+}
+sp-card .sp-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  white-space: normal;
+  text-align: left;
+  padding: var(--sp-space-5);
+  gap: var(--sp-space-3);
+  width: 100%;
+  cursor: default;
+}
+.sp-card-stack {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-3);
+  min-width: 0;
+}
+sp-card[data-interactive=true] .sp-card-inner {
+  cursor: pointer;
+}
+.sp-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-space-3);
+}
+.sp-card-eyebrow {
+  font-size: var(--sp-fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--sp-tracking-wide);
+  text-transform: uppercase;
+  color: var(--sp-ink-3);
+}
+.sp-card-title {
+  font-size: var(--sp-fs-lg);
+  font-weight: 600;
+  letter-spacing: var(--sp-tracking-tight);
+  color: var(--sp-ink-1);
+  margin: 0;
+}
+.sp-card-body {
+  font-size: var(--sp-fs-md);
+  line-height: 1.62;
+  color: var(--sp-ink-2);
+}
+.sp-card-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-2);
+  margin-top: auto;
+  padding-top: var(--sp-space-3);
+  border-top: var(--sp-hairline) solid color-mix(in oklab, var(--sp-hairline-color) 70%, transparent);
+}
+sp-panel {
+  display: block;
+  position: relative;
+  border-radius: var(--sp-radius-lg);
+}
+.sp-panel-inner {
+  display: flex;
+  flex-direction: column;
+  white-space: normal;
+  text-align: left;
+  overflow: hidden;
+}
+.sp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-space-3);
+  padding: var(--sp-space-4) var(--sp-space-5);
+  font-size: var(--sp-fs-md);
+  font-weight: 600;
+  color: var(--sp-ink-1);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.sp-panel-head:focus-visible {
+  outline: 2px solid var(--sp-ambient-accent);
+  outline-offset: -2px;
+}
+.sp-panel-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sp-panel-caret {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform var(--sp-dur-base) var(--sp-ease-out);
+  opacity: 0.7;
+}
+sp-panel[data-collapsed=true] .sp-panel-caret {
+  transform: rotate(-45deg) translateX(-2px);
+}
+.sp-panel-body {
+  padding: 0 var(--sp-space-5) var(--sp-space-5);
+  font-size: var(--sp-fs-md);
+  line-height: 1.66;
+  color: var(--sp-ink-2);
+  overflow: hidden;
+  transition: grid-template-rows var(--sp-dur-base) var(--sp-ease-out), opacity var(--sp-dur-base) var(--sp-ease-out);
+}
+sp-panel[data-collapsed=true] .sp-panel-body {
+  display: none;
+}
+sp-navbar {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+sp-button {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 100%;
+}
+sp-button > .sp-el {
+  width: 100%;
+}
+sp-navbar .sp-nav-inner {
+  position: relative;
+  z-index: 4;
+}
+.sp-nav-mark {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background:
+    conic-gradient(
+      from var(--sp-angle),
+      var(--sp-ambient-key),
+      var(--sp-ambient-accent) 32%,
+      var(--sp-ambient-fill) 62%,
+      var(--sp-ambient-key));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--sp-ambient-key) 45%, transparent), 0 0 12px -2px color-mix(in oklab, var(--sp-ambient-accent) 55%, transparent);
+}
+sp-navbar[data-scrolled=true] .sp-surface {
+  --sp-frost-blur: 26px;
+  box-shadow:
+    inset 0 0 0 var(--sp-edge-width) color-mix(in oklab, var(--sp-glass-sheen) 30%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--sp-glass-sheen) 46%, transparent),
+    var(--sp-shadow-2);
+}
+sp-navbar[data-scrolled=true] {
+  padding-top: 6px;
+}
+.sp-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-4);
+  padding: 10px var(--sp-space-4);
+  border-radius: var(--sp-radius-pill);
+  white-space: nowrap;
+}
+.sp-nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-space-2);
+  font-weight: 640;
+  font-size: var(--sp-fs-md);
+  letter-spacing: var(--sp-tracking-tight);
+  color: var(--sp-ink-1);
+  padding-inline: var(--sp-space-2);
+}
+.sp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.sp-nav-links::-webkit-scrollbar {
+  display: none;
+}
+.sp-nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: var(--sp-radius-pill);
+  font-size: var(--sp-fs-sm);
+  font-weight: 500;
+  color: var(--sp-ink-2);
+  text-decoration: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color var(--sp-dur-fast) var(--sp-ease-out), background-color var(--sp-dur-fast) var(--sp-ease-out);
+}
+.sp-nav-link:hover {
+  color: var(--sp-ink-1);
+  background: color-mix(in oklab, var(--sp-ink-1) 8%, transparent);
+}
+.sp-nav-link[aria-current=page] {
+  color: var(--sp-ambient-accent);
+  background: color-mix(in oklab, var(--sp-ambient-accent) 14%, transparent);
+}
+.sp-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-2);
+  flex-shrink: 0;
+}
+@media (max-width: 720px) {
+  .sp-nav-inner {
+    border-radius: var(--sp-radius-lg);
+    gap: var(--sp-space-2);
+    padding: 8px 10px;
+  }
+  .sp-nav-brand span {
+    display: none;
+  }
+  .sp-nav-links {
+    gap: 0;
+  }
+  sp-navbar[data-compact=hide-actions] .sp-nav-actions {
+    display: none;
+  }
+}
+@media (pointer: coarse) {
+  .sp-el {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .sp-el[data-size=sm] {
+    min-height: 40px;
+  }
+  .sp-nav-link {
+    min-height: 40px;
+    padding-inline: 14px;
+  }
+  .sp-sheen {
+    opacity: 0.32;
+  }
+}
+@media (max-width: 560px) {
+  sp-card .sp-card-inner {
+    padding: var(--sp-space-4);
+  }
+  .sp-panel-head {
+    padding: var(--sp-space-3) var(--sp-space-4);
+  }
+  .sp-panel-body {
+    padding: 0 var(--sp-space-4) var(--sp-space-4);
+  }
+  .sp-el[data-size=xl] {
+    padding: 16px var(--sp-space-5);
+    font-size: var(--sp-fs-lg);
+  }
+}
+.sp-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-4);
+}
+.sp-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-3);
+  flex-wrap: wrap;
+}
+.sp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* src/styles/index.css */

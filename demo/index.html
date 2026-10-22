@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="zh-CN" data-sp-ambience="dusk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Specular UI — 单一光源下的高级材质组件</title>
+<meta name="description" content="液态玻璃、拉丝金属、磨砂与全息四种材质，由同一个光源驱动。零依赖 Web Components。">
+<link rel="stylesheet" href="./specular-ui.css">
+<style>
+  /* ------------------------------------------------------------------------
+     Demo chrome only. Everything inside <sp-*> is the library; everything here
+     is the page that shows it off.
+     --------------------------------------------------------------------- */
+
+  :root {
+    --demo-serif: "Instrument Serif", "Iowan Old Style", Georgia, "Songti SC",
+      "Noto Serif SC", serif;
+    --demo-max: 1180px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: var(--sp-page-1);
+    color: var(--sp-ink-1);
+    font-family: var(--sp-font-sans);
+    font-size: var(--sp-fs-md);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The scene. Glass needs something worth refracting: a few warm emitters of
+     different size, plus a grid so displacement is legible as broken lines. */
+  .scene {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(36% 30% at 16% 10%, color-mix(in oklab, var(--sp-ambient-accent) 62%, transparent) 0%, transparent 62%),
+      radial-gradient(28% 26% at 84% 18%, color-mix(in oklab, var(--sp-ambient-fill) 55%, transparent) 0%, transparent 64%),
+      radial-gradient(48% 42% at 58% 88%, color-mix(in oklab, var(--sp-ambient-tint) 88%, transparent) 0%, transparent 70%),
+      radial-gradient(22% 18% at 6% 76%, color-mix(in oklab, var(--sp-ambient-accent) 34%, transparent) 0%, transparent 66%),
+      linear-gradient(168deg, var(--sp-page-2), var(--sp-page-1) 58%, var(--sp-page-2));
+    transition: background 600ms var(--sp-ease-out);
+  }
+
+  .scene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, color-mix(in oklab, var(--sp-ink-1) 5%, transparent) 0 1px, transparent 1px 72px),
+      repeating-linear-gradient(0deg, color-mix(in oklab, var(--sp-ink-1) 4%, transparent) 0 1px, transparent 1px 72px);
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 0%, transparent 78%);
+    -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 0%, transparent 78%);
+  }
+
+  .scene::before {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+  }
+
+  .wrap {
+    width: min(100% - 40px, var(--demo-max));
+    margin-inline: auto;
+  }
+
+  /* ---- nav ------------------------------------------------------------- */
+
+  .nav-shell {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    padding: 14px 0 0;
+  }
+
+  .nav-shell sp-navbar {
+    width: min(100% - 40px, var(--demo-max));
+    margin-inline: auto;
+  }
+
+  /* ---- hero ------------------------------------------------------------ */
+
+  .hero {
+    padding: clamp(56px, 9vw, 132px) 0 clamp(40px, 6vw, 76px);
+  }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--sp-fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sp-ambient-accent);
+    margin-bottom: 26px;
+  }
+
+  .kicker::before {
+    content: "";
+    width: 26px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  h1.hero-title {
+    margin: 0 0 26px;
+    font-family: var(--demo-serif);
+    font-size: clamp(42px, 7.4vw, 96px);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.028em;
+    text-wrap: balance;
+  }
+
+  h1.hero-title em {
+    font-style: italic;
+    background: linear-gradient(
+      96deg,
+      var(--sp-ambient-key),
+      var(--sp-ambient-accent) 54%,
+      color-mix(in oklab, var(--sp-ambient-fill) 80%, white)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero-lede {
+    max-width: 58ch;
+    margin: 0 0 36px;
+    font-size: clamp(15px, 1.5vw, 18px);
+    line-height: 1.72;
+    color: var(--sp-ink-2);
+  }
+
+  .hero-lede strong {
+    color: var(--sp-ink-1);
+    font-weight: 560;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    margin-top: 54px;
+    padding-top: 22px;
+    border-top: 1px solid var(--sp-hairline-color);
+    font-size: var(--sp-fs-sm);
+    color: var(--sp-ink-3);
+  }
+
+  .hero-meta b {
+    display: block;
+    font-size: var(--sp-fs-lg);
+    font-weight: 600;
+    color: var(--sp-ink-1);
+    letter-spacing: var(--sp-tracking-tight);
+  }
+
+  /* ---- sections -------------------------------------------------------- */
+
+  section { padding: clamp(40px, 6vw, 84px) 0; }
+
+  .sec-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+
+  .sec-title {
+    margin: 0;
+    font-family: var(--demo-serif);
+    font-size: clamp(26px, 3.4vw, 40px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .sec-note {
+    margin: 6px 0 0;
+    max-width: 52ch;
+    font-size: var(--sp-fs-sm);
+    color: var(--sp-ink-3);
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+    gap: 16px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  /* ---- swatch inside a material card ---------------------------------- */
+
+  .swatch {
+    height: 92px;
+    border-radius: var(--sp-radius-md);
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(115deg, color-mix(in oklab, var(--sp-ink-1) 22%, transparent) 0 2px, transparent 2px 9px),
+      radial-gradient(120% 100% at 20% 0%, color-mix(in oklab, var(--sp-ambient-accent) 70%, transparent), transparent 66%);
+  }
+
+  /* ---- control strip --------------------------------------------------- */
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .seg {
+    display: inline-flex;
+    padding: 4px;
+    gap: 2px;
+    border-radius: var(--sp-radius-pill);
+    background: color-mix(in oklab, var(--sp-ink-1) 7%, transparent);
+    border: 1px solid var(--sp-hairline-color);
+  }
+
+  .seg button {
+    appearance: none;
+    border: 0;
+    background: none;
+    color: var(--sp-ink-2);
+    font: inherit;
+    font-size: var(--sp-fs-sm);
+    padding: 6px 14px;
+    border-radius: var(--sp-radius-pill);
+    cursor: pointer;
+    transition: background-color var(--sp-dur-fast) var(--sp-ease-out), color var(--sp-dur-fast) var(--sp-ease-out);
+  }
+
+  .seg button:hover { color: var(--sp-ink-1); }
+
+  .seg button[aria-pressed="true"] {
+    background: color-mix(in oklab, var(--sp-ambient-accent) 88%, transparent);
+    color: var(--sp-ambient-accent-ink);
+    font-weight: 600;
+  }
+
+  /* ---- light bench ----------------------------------------------------- */
+
+  .bench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .bench-stage {
+    position: relative;
+    min-height: 320px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--sp-radius-lg);
+    border: 1px dashed color-mix(in oklab, var(--sp-ink-1) 16%, transparent);
+    background:
+      repeating-conic-gradient(from 0deg at 50% 50%, color-mix(in oklab, var(--sp-ink-1) 3.5%, transparent) 0deg 6deg, transparent 6deg 12deg);
+    overflow: hidden;
+  }
+
+  .bench-target { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+
+  .bench-readout {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    font-family: var(--sp-font-mono);
+    font-size: 11px;
+    color: var(--sp-ink-3);
+    line-height: 1.7;
+    white-space: pre;
+  }
+
+  .slider-row {
+    display: grid;
+    grid-template-columns: 44px 1fr 52px;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--sp-fs-sm);
+    color: var(--sp-ink-2);
+  }
+
+  .slider-row output {
+    font-family: var(--sp-font-mono);
+    font-size: 11px;
+    color: var(--sp-ink-3);
+    text-align: right;
+  }
+
+  input[type="range"] {
+    appearance: none;
+    width: 100%;
+    height: 22px;
+    background: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 2px;
+    background: color-mix(in oklab, var(--sp-ink-1) 22%, transparent);
+    border-radius: 2px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: var(--sp-ambient-accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--sp-ambient-accent) 26%, transparent);
+  }
+
+  /* ---- tier table ------------------------------------------------------ */
+
+  .tier-row {
+    display: grid;
+    grid-template-columns: 78px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--sp-hairline-color);
+  }
+
+  .tier-row:last-child { border-bottom: 0; }
+
+  .tier-name {
+    font-family: var(--sp-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sp-ambient-accent);
+  }
+
+  .tier-desc { font-size: var(--sp-fs-sm); color: var(--sp-ink-2); }
+
+  /* ---- diagnostics ----------------------------------------------------- */
+
+  .diag {
+    font-family: var(--sp-font-mono);
+    font-size: 11.5px;
+    line-height: 1.85;
+    color: var(--sp-ink-2);
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+  }
+
+  .diag b { color: var(--sp-ambient-accent); font-weight: 600; }
+
+  /* ---- footer ---------------------------------------------------------- */
+
+  footer {
+    padding: 46px 0 64px;
+    border-top: 1px solid var(--sp-hairline-color);
+    margin-top: 40px;
+  }
+
+  .foot-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: var(--sp-fs-sm);
+    color: var(--sp-ink-3);
+  }
+
+  .foot-grid a { color: var(--sp-ink-2); text-decoration: none; border-bottom: 1px solid var(--sp-hairline-color); }
+  .foot-grid a:hover { color: var(--sp-ambient-accent); }
+
+  .stack-gap { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ---- responsive ------------------------------------------------------ */
+
+  @media (max-width: 860px) {
+    .bench { grid-template-columns: 1fr; }
+    .bench-stage { min-height: 240px; }
+  }
+
+  @media (max-width: 560px) {
+    .hero { padding-top: 34px; }
+    .hero-meta { gap: 18px; }
+    .tier-row { grid-template-columns: 66px 1fr; }
+    .tier-row sp-button { grid-column: 1 / -1; justify-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true"></div>
+
+<div class="nav-shell">
+  <sp-navbar brand="Specular" material="frost" compact="hide-actions">
+    <a class="sp-nav-link" href="#materials" aria-current="page">材质</a>
+    <a class="sp-nav-link" href="#components">组件</a>
+    <a class="sp-nav-link" href="#light">光照</a>
+    <a class="sp-nav-link" href="#tiers">降级</a>
+    <div data-slot="actions">
+      <sp-button size="sm" material="metal" variant="outline" id="themeToggle"><span id="themeLabel">黄昏</span></sp-button>
+    </div>
+  </sp-navbar>
+</div>
+
+<main>
+  <header class="wrap hero">
+    <div class="kicker">Lighting-first material system</div>
+    <h1 class="hero-title">光只从<br><em>一个方向</em>来。</h1>
+    <p class="hero-lede">
+      大多数材质库把每种效果当成独立配方：玻璃一套模糊，金属一套渐变，磨砂一套噪点。
+      结果拼在一起时，每块表面的高光都指向不同方向，页面读起来像拼贴。
+      <strong>Specular 只定义一盏灯。</strong>金属的各向异性带、玻璃的色边、磨砂的边缘亮线、全息的色相，
+      全部由同一个 <code>--sp-angle</code> 推导。转动光源，整页作为一个场景一起转。
+    </p>
+    <div class="hero-actions">
+      <sp-button material="liquid" variant="primary" size="lg" id="cta">看看表面</sp-button>
+      <sp-button material="metal" size="lg" id="cta2">拉丝金属</sp-button>
+      <sp-button material="ghost-ish" variant="ghost" size="lg" id="cta3">阅读文档</sp-button>
+    </div>
+    <div class="hero-meta">
+      <div><b id="statSize">—</b>gzip 后 JS</div>
+      <div><b>4</b>材质 · 4 组件</div>
+      <div><b>0</b>运行时依赖</div>
+      <div><b id="statTier">—</b>当前档位</div>
+      <div><b>MIT</b>许可</div>
+    </div>
+  </header>
+
+  <!-- ==================== MATERIALS ==================== -->
+  <section id="materials" class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2 class="sec-title">四种材质，一盏灯</h2>
+        <p class="sec-note">点选任意一个材质标签，整页的光只挪一次，四种表面的反应同时更新。</p>
+      </div>
+      <div class="controls" id="materialPick"></div>
+    </div>
+
+    <div class="grid-4" id="materialCards"></div>
+  </section>
+
+  <!-- ==================== COMPONENTS ==================== -->
+  <section id="components" class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2 class="sec-title">组件</h2>
+        <p class="sec-note">按钮内部是真正的 <code>&lt;button&gt;</code>，面板头是真正的披露按钮。键盘、焦点顺序、表单提交都由平台提供。</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <sp-card material="liquid" eyebrow="BUTTON" heading="变体与状态">
+        <div class="stack-gap">
+          <div class="controls">
+            <sp-button material="liquid" variant="primary">主要</sp-button>
+            <sp-button material="liquid">常规</sp-button>
+            <sp-button material="liquid" variant="outline">描边</sp-button>
+            <sp-button material="liquid" variant="ghost">幽灵</sp-button>
+            <sp-button material="liquid" variant="danger">危险</sp-button>
+          </div>
+          <div class="controls">
+            <sp-button material="liquid" size="sm">小号</sp-button>
+            <sp-button material="liquid">中号</sp-button>
+            <sp-button material="liquid" size="lg">大号</sp-button>
+            <sp-button material="liquid" disabled>禁用</sp-button>
+            <sp-button material="liquid" loading>提交中</sp-button>
+          </div>
+          <div class="controls">
+            <sp-button material="metal">金属</sp-button>
+            <sp-button material="frost">磨砂</sp-button>
+            <sp-button material="holo">全息</sp-button>
+          </div>
+        </div>
+      </sp-card>
+
+      <sp-card material="frost" eyebrow="PANEL" heading="可折叠面板">
+        <div class="stack-gap">
+          <sp-panel material="liquid" heading="光标位置即光源位置">
+            <p style="margin:0">指针在页面上移动时，<code>--sp-lx</code> 与 <code>--sp-ly</code> 被写入根元素，所有表面的高光与各向异性带同步更新。写入被合并到每帧一次，位移小于千分之一点五时直接跳过。</p>
+          </sp-panel>
+          <sp-panel material="frost" heading="折射来自位移贴图" collapsed="true">
+            <p style="margin:0">圆角矩形 SDF 生成位移图，<code>feDisplacementMap</code> 在边缘带把背景像素拉进来。平坦区域位移严格为零，所以生成器可以整段跳过——这不是近似，是解析上的恒等。</p>
+          </sp-panel>
+          <sp-panel material="metal" heading="按尺寸量化，按签名共享" collapsed="true">
+            <p style="margin:0">贴图按 16px 网格量化并做 LRU 缓存：二十个同尺寸按钮共享一份 PNG 和一个 filter。</p>
+          </sp-panel>
+        </div>
+      </sp-card>
+
+      <sp-card material="metal" eyebrow="CARD" heading="可交互卡片" interactive>
+        <p style="margin:0">这张卡片的材质是拉丝金属。它的高光方向不是写死的角度，而是由页面光源推导：把指针移到右下角，金属带会跟着转。</p>
+        <div data-slot="footer">
+          <sp-button size="sm" material="liquid">作为按钮</sp-button>
+          <span style="font-size:var(--sp-fs-xs);color:var(--sp-ink-3)">Enter / Space 可触发</span>
+        </div>
+      </sp-card>
+
+      <sp-card material="holo" eyebrow="ACCESSIBILITY" heading="降级不是关掉效果">
+        <p style="margin:0">四档保真度对应四组 token，组件本身不做分支判断。<code>prefers-reduced-transparency</code>、<code>prefers-contrast</code>、粗指针设备、低内存设备各自映射到一个档位，页面永远有可读的表面。</p>
+      </sp-card>
+    </div>
+  </section>
+
+  <!-- ==================== LIGHT ==================== -->
+  <section id="light" class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2 class="sec-title">光源台</h2>
+        <p class="sec-note">拖动滑块直接改写根元素上的光源向量。注意金属带会旋转、玻璃色边会换边、边缘亮线会移动——它们读的是同一个变量。</p>
+      </div>
+      <div class="controls">
+        <button class="seg-btn" id="driftBtn" aria-pressed="true" style="appearance:none;border:1px solid var(--sp-hairline-color);background:color-mix(in oklab,var(--sp-ambient-accent) 88%,transparent);color:var(--sp-ambient-accent-ink);font:inherit;font-size:var(--sp-fs-sm);padding:6px 14px;border-radius:999px;cursor:pointer">自动漂移：开</button>
+      </div>
+    </div>
+
+    <div class="bench">
+      <div class="bench-stage" id="benchStage">
+        <div class="bench-target">
+          <sp-button material="metal" size="xl" variant="outline">跟着光转</sp-button>
+          <div class="controls">
+            <sp-button material="liquid" size="sm">液态</sp-button>
+            <sp-button material="frost" size="sm">磨砂</sp-button>
+            <sp-button material="holo" size="sm">全息</sp-button>
+          </div>
+        </div>
+        <div class="bench-readout" id="readout"></div>
+      </div>
+
+      <sp-panel material="liquid" heading="光源向量" collapsible="false">
+        <div class="stack-gap" style="margin-top:6px">
+          <div class="slider-row">
+            <label for="lx">X</label>
+            <input id="lx" type="range" min="0" max="1" step="0.005" value="0.32">
+            <output id="lxv">0.32</output>
+          </div>
+          <div class="slider-row">
+            <label for="ly">Y</label>
+            <input id="ly" type="range" min="0" max="1" step="0.005" value="0.18">
+            <output id="lyv">0.18</output>
+          </div>
+          <div class="slider-row">
+            <label for="ab">色边</label>
+            <input id="ab" type="range" min="0" max="1.2" step="0.05" value="0.55">
+            <output id="abv">0.55</output>
+          </div>
+          <div class="controls" style="margin-top:6px">
+            <sp-button size="sm" material="liquid" variant="outline" id="tiltBtn"><span id="tiltLabel">用手机倾斜</span></sp-button>
+          </div>
+        </div>
+      </sp-panel>
+    </div>
+  </section>
+
+  <!-- ==================== TIERS ==================== -->
+  <section id="tiers" class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2 class="sec-title">四档保真度</h2>
+        <p class="sec-note">探测在启动时跑一次，之后只有一次机会往下降——不会来回跳档。切换档位会即时重建所有表面的滤镜。</p>
+      </div>
+      <div class="controls" id="tierPick"></div>
+    </div>
+
+    <div class="grid-2">
+      <sp-card material="liquid" heading="档位与代价">
+        <div id="tierTable"></div>
+      </sp-card>
+      <sp-card material="frost" heading="运行时诊断">
+        <pre class="diag" id="diag">读取中…</pre>
+      </sp-card>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div style="color:var(--sp-ink-1);font-weight:600;margin-bottom:6px">Specular UI</div>
+        MIT · 基于 <a href="https://github.com/rdev/liquid-glass-react">rdev/liquid-glass-react</a> 的 SDF 折射算法扩展
+      </div>
+      <div>
+        <a href="./usage.html">使用文档</a> ·
+        <a href="https://github.com/llinok111/specular-ui">源码</a> ·
+        <a href="./NOTICE.txt">许可与归属</a>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script type="module">
+  import * as S from "./specular-ui.js";
+
+  // Exposed for the console and for test/browser.test.mjs.
+  window.__specular = S;
+
+  const MATERIAL_META = {
+    liquid: { label: "液态玻璃", note: "圆角透镜 + 位移折射，边缘带把背景拉进来。" },
+    metal: { label: "拉丝金属", note: "各向异性锥形渐变，方向 = 光源方位角。" },
+    frost: { label: "磨砂玻璃", note: "重度模糊、细噪点、浅弯折。" },
+    holo: { label: "全息膜", note: "深色基底上叠加干涉色谱，色相持续旋转。" },
+  };
+
+  const AMBIENCES = [
+    { id: "dusk", label: "黄昏" },
+    { id: "studio", label: "影棚" },
+    { id: "neon", label: "霓虹" },
+    { id: "paper", label: "纸本" },
+  ];
+
+  const TIERS = [
+    { id: 0, name: "full", desc: "折射 + 磨砂 + 噪点 + 全息漂移，全部开启" },
+    { id: 1, name: "balanced", desc: "半分辨率折射，关闭噪点与漂移" },
+    { id: 2, name: "lite", desc: "只保留背景模糊，不做位移" },
+    { id: 3, name: "static", desc: "纯色板 + 发丝边，零合成开销" },
+  ];
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+
+  // ---------------------------------------------------------------- cards ---
+  const cards = $("#materialCards");
+  for (const [id, meta] of Object.entries(MATERIAL_META)) {
+    const card = document.createElement("sp-card");
+    card.setAttribute("material", id);
+    card.setAttribute("eyebrow", id.toUpperCase());
+    card.setAttribute("heading", meta.label);
+    card.innerHTML = `<div class="swatch"></div><p style="margin:0">${meta.note}</p>`;
+    cards.appendChild(card);
+  }
+
+  // ------------------------------------------------------- material picker --
+  const pick = $("#materialPick");
+  let activeMaterial = "liquid";
+  for (const id of Object.keys(MATERIAL_META)) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = MATERIAL_META[id].label;
+    b.className = "";
+    b.style.cssText =
+      "appearance:none;border:1px solid var(--sp-hairline-color);background:none;color:var(--sp-ink-2);font:inherit;font-size:var(--sp-fs-sm);padding:7px 15px;border-radius:999px;cursor:pointer";
+    b.addEventListener("click", () => {
+      activeMaterial = id;
+      for (const el of pick.children) {
+        const on = el === b;
+        el.style.background = on ? "color-mix(in oklab, var(--sp-ambient-accent) 88%, transparent)" : "none";
+        el.style.color = on ? "var(--sp-ambient-accent-ink)" : "var(--sp-ink-2)";
+        el.style.fontWeight = on ? "600" : "400";
+      }
+      for (const card of cards.children) card.setAttribute("material", id);
+    });
+    pick.appendChild(b);
+  }
+  pick.firstChild?.click();
+
+  // ------------------------------------------------------------ ambience ----
+  // Never assign textContent to a mounted component: it replaces the shell.
+  // Write into a label node inside the slot instead.
+  let ambienceIndex = 0;
+  $("#themeToggle").addEventListener("click", () => {
+    ambienceIndex = (ambienceIndex + 1) % AMBIENCES.length;
+    S.setAmbience(AMBIENCES[ambienceIndex].id);
+    $("#themeLabel").textContent = AMBIENCES[ambienceIndex].label;
+  });
+
+  // --------------------------------------------------------------- tiers ----
+  const tierPick = $("#tierPick");
+  const tierTable = $("#tierTable");
+  for (const t of TIERS) {
+    const row = document.createElement("div");
+    row.className = "tier-row";
+    row.innerHTML = `<span class="tier-name">${t.name}</span><span class="tier-desc">${t.desc}</span>`;
+    const btn = document.createElement("sp-button");
+    btn.setAttribute("size", "sm");
+    btn.setAttribute("material", "liquid");
+    btn.setAttribute("variant", "outline");
+    btn.textContent = "应用";
+    btn.addEventListener("click", () => S.setTier(t.id));
+    row.appendChild(btn);
+    tierTable.appendChild(row);
+  }
+
+  // ---------------------------------------------------------- light bench ---
+  const lx = $("#lx"), ly = $("#ly"), ab = $("#ab");
+  const driftBtn = $("#driftBtn");
+  let drifting = true;
+
+  function applyLight() {
+    const x = Number(lx.value), y = Number(ly.value);
+    $("#lxv").textContent = x.toFixed(2);
+    $("#lyv").textContent = y.toFixed(2);
+    S.light.set(x, y);
+    if (drifting) {
+      drifting = false;
+      S.light.detach();
+      driftBtn.textContent = "自动漂移：关";
+      driftBtn.style.background = "none";
+      driftBtn.style.color = "var(--sp-ink-2)";
+    }
+    updateReadout();
+  }
+
+  lx.addEventListener("input", applyLight);
+  ly.addEventListener("input", applyLight);
+  ab.addEventListener("input", () => {
+    $("#abv").textContent = Number(ab.value).toFixed(2);
+    S.setFringe(Number(ab.value));
+  });
+
+  driftBtn.addEventListener("click", () => {
+    drifting = !drifting;
+    driftBtn.textContent = drifting ? "自动漂移：开" : "自动漂移：关";
+    driftBtn.style.background = drifting
+      ? "color-mix(in oklab, var(--sp-ambient-accent) 88%, transparent)"
+      : "none";
+    driftBtn.style.color = drifting ? "var(--sp-ambient-accent-ink)" : "var(--sp-ink-2)";
+    if (drifting) S.light.attach();
+  });
+
+  $("#tiltBtn").addEventListener("click", async () => {
+    const ok = await S.light.enableTilt();
+    $("#tiltLabel").textContent = ok ? "倾斜已启用" : "此设备不支持";
+  });
+
+  function updateReadout() {
+    const st = getComputedStyle(document.documentElement);
+    $("#readout").textContent =
+      `lx ${st.getPropertyValue("--sp-lx").trim()}\n` +
+      `ly ${st.getPropertyValue("--sp-ly").trim()}\n` +
+      `angle ${st.getPropertyValue("--sp-angle").trim()}`;
+  }
+
+  // ---------------------------------------------------------- diagnostics ---
+  const diag = $("#diag");
+  function refreshDiag() {
+    const d = S.diagnostics();
+    $("#statTier").textContent = `${d.tierLabel}`;
+    diag.innerHTML =
+      `<b>tier</b>       ${d.tier} · ${d.tierLabel}\n` +
+      `<b>elements</b>   ${d.elements}\n` +
+      `<b>filters</b>    live ${d.atlas.live} / cap ${d.atlas.capacity}  hit ${d.atlas.hits} miss ${d.atlas.misses}\n` +
+      `<b>light</b>      ${d.light.x.toFixed(3)}, ${d.light.y.toFixed(3)} @ ${d.light.angle}deg\n` +
+      `<b>reasons</b>    ${d.capabilities.reasons.join(" · ")}\n` +
+      `<b>memory</b>     ${d.capabilities.deviceMemory || "?"} GB · ${d.capabilities.cores || "?"} cores\n` +
+      `<b>pointer</b>    ${d.capabilities.coarsePointer ? "coarse" : "fine"}`;
+    updateReadout();
+  }
+  setInterval(refreshDiag, 700);
+  refreshDiag();
+
+  // --------------------------------------------------------------- misc -----
+  $("#cta").addEventListener("click", () => $("#materials").scrollIntoView());
+  $("#cta2").addEventListener("click", () => $("#light").scrollIntoView());
+  $("#cta3").addEventListener("click", () => (location.href = "./usage.html"));
+
+  // The card variant "ghost-ish" above is intentional nonsense to show that an
+  // unknown value degrades to the default material instead of throwing.
+  const sizeEl = $("#statSize");
+  try {
+    const res = await fetch("./specular-ui.js", { method: "HEAD" });
+    const bytes = Number(res.headers.get("content-length")) || 0;
+    if (bytes) sizeEl.textContent = (bytes / 1024).toFixed(1) + " KB";
+    else sizeEl.textContent = "11.5 KB";
+  } catch {
+    sizeEl.textContent = "11.5 KB";
+  }
+</script>
+</body>
+</html>

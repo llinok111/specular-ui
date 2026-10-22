@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN" data-sp-ambience="dusk">
+<head>
+<meta charset="utf-8">
+<title>probe</title>
+<link rel="stylesheet" href="../dist/specular-ui.css">
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(60% 50% at 20% 15%, #f0a860 0%, transparent 60%),
+      radial-gradient(50% 45% at 82% 30%, #6b4a2e 0%, transparent 62%),
+      radial-gradient(70% 60% at 50% 100%, #2a1a10 0%, transparent 70%),
+      #120e0b;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sp-font-sans);
+    color: var(--sp-ink-1);
+  }
+  .strip { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .plate { width: 100%; max-width: 520px; }
+</style>
+</head>
+<body>
+  <div class="strip">
+    <sp-button material="liquid" variant="primary" size="lg">液态玻璃</sp-button>
+    <sp-button material="metal">金属</sp-button>
+    <sp-button material="frost">磨砂</sp-button>
+    <sp-button material="holo">全息</sp-button>
+  </div>
+  <div class="strip">
+    <sp-button material="liquid" size="sm">小</sp-button>
+    <sp-button material="liquid">中</sp-button>
+    <sp-button material="liquid" size="lg">大</sp-button>
+    <sp-button material="liquid" disabled>禁用</sp-button>
+    <sp-button material="liquid" loading>载入</sp-button>
+  </div>
+  <sp-card class="plate" material="liquid" eyebrow="PROBE" heading="折射是否成立">
+    <p style="margin:0">如果这段文字上方的表面能扭曲背后的暖色光斑，说明 feDisplacementMap 与 backdrop-filter 的组合在当前浏览器成立。</p>
+  </sp-card>
+<script type="module">
+  import * as S from "../dist/specular-ui.js";
+  window.__specular = S;
+  window.__diag = () => S.diagnostics();
+  setTimeout(() => {
+    document.documentElement.dataset.probe = "done";
+    const surfaces = [...document.querySelectorAll(".sp-surface")]
+      .map((el) => ({ filter: el.style.filter || "none", w: Math.round(el.getBoundingClientRect().width) }));
+    document.documentElement.dataset.filters = JSON.stringify(surfaces);
+  }, 600);
+</script>
+</body>
+</html>

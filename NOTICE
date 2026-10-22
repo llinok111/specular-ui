@@ -1,0 +1,77 @@
+Specular UI
+Copyright (c) 2026 specular-ui contributors
+Licensed under the MIT License (see LICENSE).
+
+===============================================================================
+UPSTREAM
+===============================================================================
+
+This project is an independent extension of, and includes code derived from:
+
+  liquid-glass-react
+  https://github.com/rdev/liquid-glass-react
+  Copyright (c) 2025 MAX ROVENSKY
+  License: MIT
+
+  Retained from the upstream tree (as reference for the algorithm):
+    src/index.tsx          upstream React component
+    src/shader-utils.ts    upstream SDF displacement generator
+    src/utils.ts           upstream pre-generated displacement maps
+
+  Upstream scaffolding not carried forward (superseded by this repository's
+  own build, or referencing the upstream package name): liquid-glass-example/
+  (Next.js demo), esbuild.config.js, tsconfig.json, bun.lock.
+
+  Files derived from the upstream project:
+    src/index.tsx          (upstream React component, kept for reference)
+    src/shader-utils.ts    (upstream SDF displacement generator)
+    src/utils.ts           (upstream pre-generated displacement maps)
+    src/core/sdf.js        (ported; makeLensFragment / roundedRectSDF /
+                            smoothStep carry the upstream maths, with the
+                            parameterisation and neutral-region skip added here)
+
+  Upstream's own attribution, preserved verbatim in src/shader-utils.ts:
+    "Adapted from https://github.com/shuding/liquid-glass"
+
+  This repository retains the upstream commit history (16 commits, original
+  authors and dates). The upstream media assets (video.mov 80 MB,
+  project-liquid.gif 16 MB, plus two PNG screenshots) were dropped — the first
+  two from history to keep the repository clonable, the screenshots from the
+  tree because this README no longer references them. No source file was
+  altered by either removal.
+
+===============================================================================
+ORIGINAL WORK IN THIS REPOSITORY
+===============================================================================
+
+Copyright (c) 2026 specular-ui contributors, MIT. Principal additions:
+
+  src/core/capability.js     capability probe, four-tier decision table,
+                             frame governor with single-downgrade semantics
+  src/core/light.js          document-wide light controller: pointer tracking,
+                             idle drift, azimuth derivation, per-element lobe
+  src/core/materials.js      material registry and ambience presets
+  src/core/displacement.js   refraction atlas: size quantisation, resolution
+                             cap, LRU filter sharing
+  src/core/sdf.js            makeBoxLens (pixel-space lens), makeDoubleLensFragment,
+                             makeGrazingFragment, computeDisplacementField
+  src/elements/*             sp-button, sp-card, sp-panel, sp-navbar and the
+                             shared light-DOM base class
+  src/styles/*               token system, four-material CSS optics, element shell
+  demo/, docs/, test/        demonstration, documentation, 68 tests
+
+===============================================================================
+THIRD-PARTY RUNTIME CODE
+===============================================================================
+
+None. The shipped bundles have no runtime dependencies. Build and test
+dependencies (esbuild, playwright, pngjs) are development-only and are not
+included in dist/ or in the release ZIP.
+
+===============================================================================
+TRADEMARKS
+===============================================================================
+
+"Apple" and "Liquid Glass" are trademarks of Apple Inc. This project is not
+affiliated with, endorsed by, or sponsored by Apple. References to Apple's
+design language appear only as descriptive comparison in documentation.

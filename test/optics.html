@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN" data-sp-ambience="studio" data-sp-auto="false">
+<head>
+<meta charset="utf-8">
+<title>optics bench</title>
+<link rel="stylesheet" href="../dist/specular-ui.css">
+<style>
+  html, body { margin: 0; background: #05070a; }
+  body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    font-family: var(--sp-font-sans);
+    color: var(--sp-ink-1);
+    /* High-frequency vertical bars: a displacement of even 1px is visible as a
+       phase shift, and a wavelength split shows as colour on the bar edges. */
+    background-image:
+      repeating-linear-gradient(90deg, #f4f7ff 0 3px, #0a0d12 3px 8px);
+  }
+  #stage {
+    position: relative;
+    padding: 40px;
+    border-radius: 28px;
+  }
+  sp-card { width: 480px; }
+  /* A second surface with no refraction, for A/B inside one frame. */
+  #flat { position: absolute; right: 40px; bottom: 40px; width: 180px; }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <sp-card id="lens" material="liquid" eyebrow="OPTICS" heading="条纹相位">
+      <p style="margin:0">竖条纹穿过这块玻璃时应当发生相位偏移；边缘出现暖冷分离即色散生效。</p>
+    </sp-card>
+  </div>
+<script type="module">
+  import * as S from "../dist/specular-ui.js";
+  S.init({ governor: false, tier: 0 });
+  window.__specular = S;
+  // Big surfaces need a wider bend than a pill; use the deep lens profile.
+  const lens = document.querySelector("#lens");
+  lens.setAttribute("data-sp-profile", "lens-deep");
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+/* specular-ui — single stylesheet entry.
+   Layer order is intentional: tokens define the vocabulary, materials speak it,
+   elements compose both. Bundled by build.mjs into dist/specular-ui.css. */
+@import "./tokens.css";
+@import "./materials.css";
+@import "./elements.css";
