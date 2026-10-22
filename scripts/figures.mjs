@@ -91,19 +91,43 @@ const matBox = await sectionBox(desktop, "#materials");
 await desktop.evaluate(() => document.querySelector("#materials").scrollIntoView());
 await desktop.waitForTimeout(500);
 const matClip = await desktop.evaluate(() => {
-  const el = document.querySelector("#materials .grid-4");
-  const r = el.getBoundingClientRect();
-  return { x: Math.round(r.x) - 10, y: Math.round(r.y) - 10, width: Math.round(r.width) + 20, height: Math.round(r.height) + 20 };
+  const grid = document.querySelector("#materials .grid-4");
+  const kids = [...grid.children].map((c) => c.getBoundingClientRect());
+  const left = Math.min(...kids.map((r) => r.left));
+  const right = Math.max(...kids.map((r) => r.right));
+  const top = Math.min(...kids.map((r) => r.top));
+  const bottom = Math.max(...kids.map((r) => r.bottom));
+  return {
+    x: Math.round(left) - 12,
+    y: Math.round(top) - 12,
+    width: Math.round(right - left) + 24,
+    height: Math.round(bottom - top) + 24,
+  };
 });
 await toWebp(await shot(desktop, "materials", matClip), "materials.webp", 1200);
 
-// 3. Components — buttons, panels, cards.
+// 3. Components — two columns by two rows.
+//
+// The grid wraps into an uneven layout (three tall cards, then one short one),
+// so a crop that assumes equal halves leaves a dead black column on the right.
+// Measure the actual children and crop to their union, clamped to the viewport.
 await desktop.evaluate(() => document.querySelector("#components").scrollIntoView());
 await desktop.waitForTimeout(600);
 const compClip = await desktop.evaluate(() => {
-  const el = document.querySelector("#components .grid-2");
-  const r = el.getBoundingClientRect();
-  return { x: Math.round(r.x) - 10, y: Math.round(r.y) - 10, width: Math.round(r.width) + 20, height: Math.min(760, Math.round(r.height)) + 20 };
+  const grid = document.querySelector("#components .grid-2");
+  // Only the two full-width rows: the 4th card is short, so including its
+  // bottom would drag in empty space next to the tall third card.
+  const kids = [...grid.children].slice(0, 2).map((c) => c.getBoundingClientRect());
+  const left = Math.min(...kids.map((r) => r.left));
+  const right = Math.max(...kids.map((r) => r.right));
+  const top = Math.min(...kids.map((r) => r.top));
+  const bottom = Math.min(Math.max(...kids.map((r) => r.bottom)), innerHeight - 8);
+  return {
+    x: Math.round(left) - 12,
+    y: Math.round(top) - 12,
+    width: Math.round(right - left) + 24,
+    height: Math.round(bottom - top) + 20,
+  };
 });
 await toWebp(await shot(desktop, "components", compClip), "components.webp", 1200);
 
@@ -111,9 +135,18 @@ await toWebp(await shot(desktop, "components", compClip), "components.webp", 120
 await desktop.evaluate(() => document.querySelector("#controls").scrollIntoView());
 await desktop.waitForTimeout(600);
 const ctrlClip = await desktop.evaluate(() => {
-  const el = document.querySelector("#controls .grid-2");
-  const r = el.getBoundingClientRect();
-  return { x: Math.round(r.x) - 10, y: Math.round(r.y) - 10, width: Math.round(r.width) + 20, height: Math.round(r.height) + 20 };
+  const grid = document.querySelector("#controls .grid-2");
+  const kids = [...grid.children].map((c) => c.getBoundingClientRect());
+  const left = Math.min(...kids.map((r) => r.left));
+  const right = Math.max(...kids.map((r) => r.right));
+  const top = Math.min(...kids.map((r) => r.top));
+  const bottom = Math.min(Math.max(...kids.map((r) => r.bottom)), innerHeight - 8);
+  return {
+    x: Math.round(left) - 12,
+    y: Math.round(top) - 12,
+    width: Math.round(right - left) + 24,
+    height: Math.round(bottom - top) + 20,
+  };
 });
 await toWebp(await shot(desktop, "controls", ctrlClip), "controls.webp", 1100);
 
@@ -131,10 +164,20 @@ for (const [id] of ambiences) {
   await desktop.evaluate(() => document.querySelector("#materials").scrollIntoView());
   await desktop.waitForTimeout(520);
   const clip = await desktop.evaluate(() => {
-    const el = document.querySelector("#materials .grid-4");
-    const r = el.getBoundingClientRect();
-    // Just the top row of two cards, so the strip stays legible at README width.
-    return { x: Math.round(r.x) - 8, y: Math.round(r.y) - 8, width: Math.round(r.width / 2) + 16, height: 300 };
+    // Two cards, measured — not half the grid, which drifts as the grid columns
+    // change and would slice the second card down the middle.
+    const grid = document.querySelector("#materials .grid-4");
+    const kids = [...grid.children].slice(0, 2).map((c) => c.getBoundingClientRect());
+    const left = Math.min(...kids.map((r) => r.left));
+    const right = Math.max(...kids.map((r) => r.right));
+    const top = Math.min(...kids.map((r) => r.top));
+    const bottom = Math.max(...kids.map((r) => r.bottom));
+    return {
+      x: Math.round(left) - 10,
+      y: Math.round(top) - 10,
+      width: Math.round(right - left) + 20,
+      height: Math.round(bottom - top) + 20,
+    };
   });
   const file = await shot(desktop, `amb-${id}`, clip);
   const buf = await sharp(file)
