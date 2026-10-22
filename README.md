@@ -11,6 +11,10 @@
   <a href="./docs/PERF.md">实测数据</a>
 </p>
 
+<p align="center">
+  <img src="./docs/img/hero.webp" alt="Specular UI 首屏：暖金环境下的液态玻璃按钮与卡片" width="100%">
+</p>
+
 ---
 
 ## 为什么不是又一个玻璃拟态库
@@ -32,6 +36,14 @@ Specular 只定义**一盏灯**：
 2. **交互有物理动机。** 指针即光源，hover 时高光"扫过"表面是必然结果，不是额外写的动画。
 3. **降级只需改 token。** 四档保真度是四组变量，组件不做分支判断。
 
+### 环境不是换配色，是换灯
+
+<p align="center">
+  <img src="./docs/img/ambiences.webp" alt="同一组卡片在四个环境下的表现：黄昏、影棚、霓虹、纸本" width="100%">
+</p>
+
+<p align="center"><sub>黄昏 · 影棚 · 霓虹 · 纸本 —— 同一组组件，只改了 <code>data-sp-ambience</code></sub></p>
+
 ## 四种材质
 
 | 材质 | `material` | 光学构成 | 代价 |
@@ -40,6 +52,10 @@ Specular 只定义**一盏灯**：
 | 拉丝金属 | `metal` | 各向异性锥形高光（随光源旋转）+ 拉丝纹理 + 双面亮边 | 0 层（不采样背景） |
 | 磨砂玻璃 | `frost` | 重度模糊 + 分形噪声颗粒 + 浅色叠加 | 1 层 backdrop-filter |
 | 全息膜 | `holo` | 深色基底 + 干涉色谱（`@property` 驱动的连续色相）+ 指针遮罩 | 1 层 backdrop-filter |
+
+<p align="center">
+  <img src="./docs/img/materials.webp" alt="四种材质卡片：液态玻璃、拉丝金属、磨砂玻璃、全息膜" width="100%">
+</p>
 
 ## 快速开始
 
@@ -74,7 +90,21 @@ Specular 只定义**一盏灯**：
 
 八个组件，八个真实控件。没有任何一个是"用 div 画出来再补 `role`"。
 
+<p align="center">
+  <img src="./docs/img/components.webp" alt="组件集：按钮变体与状态、可折叠面板、可交互卡片" width="100%">
+</p>
+
+<p align="center">
+  <img src="./docs/img/controls.webp" alt="表单控件：材质标签页、输入框、开关" width="100%">
+</p>
+
 组件用 light DOM 而不是 Shadow DOM：主题变量正常继承，全局覆盖依然有效，`::part` 那套仪式完全不需要。
+
+<p align="center">
+  <img src="./docs/img/mobile.webp" alt="390px 视口下的同一页面" width="380">
+</p>
+
+<p align="center"><sub>390px 视口：导航收起品牌文字、触控目标保持 44px、无横向溢出</sub></p>
 
 ## 环境（ambience）
 

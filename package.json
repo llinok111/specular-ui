@@ -21,7 +21,8 @@
     "build": "node build.mjs",
     "test": "node --test --test-concurrency=1 test/unit.test.mjs test/contrast.test.mjs",
     "test:browser": "node --test --test-concurrency=1 test/browser.test.mjs test/optical.test.mjs test/controls.test.mjs",
-    "audit:contrast": "node scripts/contrast.mjs"
+    "audit:contrast": "node scripts/contrast.mjs",
+    "figures": "node scripts/figures.mjs"
   },
   "keywords": [
     "ui",
